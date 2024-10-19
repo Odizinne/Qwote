@@ -14,6 +14,7 @@ public:
 
 private slots:
     void onStartupActionStateChanged();
+    void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     void createTrayIcon();
