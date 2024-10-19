@@ -39,6 +39,9 @@ private:
     void setTitleColor();
     void placeNote();
     void fadeIn();
+    void updateCursorShape(const QPoint &pos);
+    bool isResizing = false;
+    Qt::Edges resizeDirection = Qt::Edges();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

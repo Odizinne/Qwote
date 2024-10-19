@@ -12,7 +12,7 @@
 #include <QPropertyAnimation>
 
 using namespace Utils;
-
+const int resizeMargin = 10;
 QList<NoteWidget*> NoteWidget::existingNotes;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
@@ -132,6 +132,8 @@ void NoteWidget::saveNote() {
     noteObject["content"] = noteContent;
     noteObject["posX"] = pos().x();
     noteObject["posY"] = pos().y();
+    noteObject["width"] = this->width();
+    noteObject["height"] = this->height();
     noteObject["pinned"] = isPinned;
 
     QJsonDocument doc(noteObject);
@@ -165,6 +167,10 @@ void NoteWidget::loadNoteFromFile() {
 
             QPoint position(noteObject.value("posX").toInt(), noteObject.value("posY").toInt());
             restorePosition(position);
+
+            int width = noteObject.value("width").toInt(this->width());   // Load the width
+            int height = noteObject.value("height").toInt(this->height()); // Load the height
+            this->resize(width, height);  // Resize the widget
 
             isPinned = noteObject.value("pinned").toBool();
             ui->pinButton->setChecked(isPinned);
@@ -250,23 +256,64 @@ void NoteWidget::setTitleColor() {
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        isDragging = true;
-        dragStartPosition = event->pos();
-        this->setMouseTracking(true);
+        if (resizeDirection != Qt::Edges()) {
+            isResizing = true;
+            this->grabMouse(); // Capture the mouse for resizing
+        } else {
+            isDragging = true;
+            dragStartPosition = event->pos();
+            this->setMouseTracking(true);
+        }
     }
 }
 
 void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
+        // Handle window dragging
         QPoint newPos = this->pos() + (event->pos() - dragStartPosition);
         this->move(newPos);
+    } else if (isResizing) {
+        // Handle window resizing
+        QRect currentGeometry = this->geometry();
+        QPoint globalMousePos = event->globalPos();
+
+        if (resizeDirection & Qt::LeftEdge) {
+            int newX = globalMousePos.x();
+            if (currentGeometry.right() - newX >= minimumWidth()) {
+                currentGeometry.setLeft(newX);
+            }
+        }
+        if (resizeDirection & Qt::RightEdge) {
+            int newWidth = globalMousePos.x() - currentGeometry.left();
+            if (newWidth >= minimumWidth()) {
+                currentGeometry.setWidth(newWidth);
+            }
+        }
+        if (resizeDirection & Qt::TopEdge) {
+            int newY = globalMousePos.y();
+            if (currentGeometry.bottom() - newY >= minimumHeight()) {
+                currentGeometry.setTop(newY);
+            }
+        }
+        if (resizeDirection & Qt::BottomEdge) {
+            int newHeight = globalMousePos.y() - currentGeometry.top();
+            if (newHeight >= minimumHeight()) {
+                currentGeometry.setHeight(newHeight);
+            }
+        }
+
+        this->setGeometry(currentGeometry);
+    } else {
+        // Check if the cursor is near the edges for resizing
+        updateCursorShape(event->pos());
     }
 }
 
 void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
-        this->releaseMouse();
+        isResizing = false;
+        this->releaseMouse(); // Release mouse capture when resizing is done
         savePosition();
     }
 }
@@ -281,3 +328,33 @@ void NoteWidget::fadeIn() {
     animation->start();
 }
 
+void NoteWidget::updateCursorShape(const QPoint &pos) {
+    Qt::Edges detectedEdges;
+
+    if (pos.x() <= resizeMargin) {
+        detectedEdges |= Qt::LeftEdge;
+    } else if (pos.x() >= this->width() - resizeMargin) {
+        detectedEdges |= Qt::RightEdge;
+    }
+
+    if (pos.y() <= resizeMargin) {
+        detectedEdges |= Qt::TopEdge;
+    } else if (pos.y() >= this->height() - resizeMargin) {
+        detectedEdges |= Qt::BottomEdge;
+    }
+
+    // Set appropriate cursor based on detected edges
+    if (detectedEdges == (Qt::LeftEdge | Qt::TopEdge) || detectedEdges == (Qt::RightEdge | Qt::BottomEdge)) {
+        setCursor(Qt::SizeFDiagCursor);
+    } else if (detectedEdges == (Qt::RightEdge | Qt::TopEdge) || detectedEdges == (Qt::LeftEdge | Qt::BottomEdge)) {
+        setCursor(Qt::SizeBDiagCursor);
+    } else if (detectedEdges & (Qt::LeftEdge | Qt::RightEdge)) {
+        setCursor(Qt::SizeHorCursor);
+    } else if (detectedEdges & (Qt::TopEdge | Qt::BottomEdge)) {
+        setCursor(Qt::SizeVerCursor);
+    } else {
+        setCursor(Qt::ArrowCursor);
+    }
+
+    resizeDirection = detectedEdges; // Store the current edge for resizing
+}
