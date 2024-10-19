@@ -2,31 +2,44 @@
 #define NOTEWIDGET_H
 
 #include <QWidget>
+#include <QString>
+#include <QPoint>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class NoteWidget; }
-QT_END_NAMESPACE
+namespace Ui {
+class NoteWidget;
+}
 
 class NoteWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit NoteWidget(QWidget *parent = nullptr);
+    explicit NoteWidget(QWidget *parent = nullptr, const QString &filePath = QString(), bool restored = false);
     ~NoteWidget();
+
+    void setNoteTitle(const QString &title);
+    void setNoteContent(const QString &content);
+    void deleteNote();
     static void createNewNote();
 
-signals:
-    void noteClosed();
+    // New methods for saving and restoring position
+    void savePosition();
+    void restorePosition(const QPoint &position);
+
+private:
+    Ui::NoteWidget *ui;
+    bool isDragging;
+    QString filePath;
+    bool isRestored;
+    QPoint dragStartPosition;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-private:
-    Ui::NoteWidget *ui;
-    bool isDragging;
-    QPoint dragStartPosition;
+    void createNewNoteFile();
+    void loadNoteFromFile();
+    void saveNote();
 };
 
 #endif // NOTEWIDGET_H

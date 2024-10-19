@@ -13,6 +13,9 @@ public:
 private:
     void createTrayIcon();
     QSystemTrayIcon *trayIcon;
+    bool restoreSavedNotes();
+    void createNewNote();
+
 signals:
 };
 
