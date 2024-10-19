@@ -25,12 +25,15 @@ public:
     void savePosition();
     void restorePosition(const QPoint &position);
 
+private slots:
+    void togglePinnedState();
 private:
     Ui::NoteWidget *ui;
     bool isDragging;
     QString filePath;
     bool isRestored;
     QPoint dragStartPosition;
+    bool isPinned;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

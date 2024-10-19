@@ -13,14 +13,14 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     ui(new Ui::NoteWidget),
     isDragging(false),
     filePath(filePath),
-    isRestored(restored)
+    isRestored(restored),
+    isPinned(false)
 {
     ui->setupUi(this);
     ui->noteTitleLineEdit->setPlaceholderText("Name this note");
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Window | Qt::WindowMinimizeButtonHint);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
-    // Load existing note content if restored
     if (isRestored) {
         loadNoteFromFile();
     } else {
@@ -29,7 +29,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
 
     // Save whenever the text or title changes
     connect(ui->closeButton, &QToolButton::clicked, this, &NoteWidget::deleteNote);
-    connect(ui->minimizeButton, &QToolButton::clicked, this, &NoteWidget::showMinimized);
+    connect(ui->pinButton, &QToolButton::clicked, this, &NoteWidget::togglePinnedState);
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::saveNote);
     connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::saveNote);
@@ -37,6 +37,13 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
 
 NoteWidget::~NoteWidget() {
     delete ui;
+}
+
+void NoteWidget::togglePinnedState() {
+    isPinned = ui->pinButton->isChecked();
+    setWindowFlags(isPinned ? Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint : Qt::Window | Qt::FramelessWindowHint);
+    show();
+    saveNote();
 }
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
@@ -85,36 +92,6 @@ void NoteWidget::createNewNoteFile() {
     savePosition(); // Save the initial position (0,0) by default
 }
 
-void NoteWidget::loadNoteFromFile() {
-    if (filePath.isEmpty()) {
-        return; // No file to load from
-    }
-
-    QFile file(filePath);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        // Read the file content
-        QByteArray fileData = file.readAll();
-        file.close();
-
-        // Parse the JSON document
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-        if (jsonDoc.isObject()) {
-            // Extract the title and content from the JSON object
-            QJsonObject noteObject = jsonDoc.object();
-            QString noteTitle = noteObject.value("title").toString();
-            QString noteContent = noteObject.value("content").toString();
-
-            // Set the title and content in the UI
-            setNoteTitle(noteTitle);
-            setNoteContent(noteContent);
-
-            // Restore position from the JSON object
-            QPoint position(noteObject.value("posX").toInt(), noteObject.value("posY").toInt());
-            restorePosition(position);
-        }
-    }
-}
-
 void NoteWidget::saveNote() {
     if (filePath.isEmpty()) {
         return;
@@ -126,9 +103,9 @@ void NoteWidget::saveNote() {
     QJsonObject noteObject;
     noteObject["title"] = noteTitle;
     noteObject["content"] = noteContent;
-
     noteObject["posX"] = pos().x();
     noteObject["posY"] = pos().y();
+    noteObject["pinned"] = isPinned; // Save pinned state
 
     QJsonDocument doc(noteObject);
 
@@ -136,6 +113,35 @@ void NoteWidget::saveNote() {
     if (file.open(QIODevice::WriteOnly)) {
         file.write(doc.toJson());
         file.close();
+    }
+}
+
+void NoteWidget::loadNoteFromFile() {
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    QFile file(filePath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QByteArray fileData = file.readAll();
+        file.close();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+        if (jsonDoc.isObject()) {
+            QJsonObject noteObject = jsonDoc.object();
+            QString noteTitle = noteObject.value("title").toString();
+            QString noteContent = noteObject.value("content").toString();
+
+            setNoteTitle(noteTitle);
+            setNoteContent(noteContent);
+
+            QPoint position(noteObject.value("posX").toInt(), noteObject.value("posY").toInt());
+            restorePosition(position);
+
+            isPinned = noteObject.value("pinned").toBool();
+            ui->pinButton->setChecked(isPinned);
+            togglePinnedState();
+        }
     }
 }
 

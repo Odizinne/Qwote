@@ -38,7 +38,7 @@
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QToolButton" name="minimizeButton">
+    <widget class="QToolButton" name="pinButton">
      <property name="minimumSize">
       <size>
        <width>25</width>
@@ -46,7 +46,10 @@
       </size>
      </property>
      <property name="text">
-      <string>_</string>
+      <string>o</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
