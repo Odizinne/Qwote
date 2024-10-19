@@ -23,6 +23,7 @@ public:
 
     void savePosition();
     void restorePosition(const QPoint &position);
+    static QList<NoteWidget*> existingNotes;
 
 private slots:
     void togglePinnedState();

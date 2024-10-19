@@ -14,6 +14,7 @@
 using namespace Utils;
 
 const int RESIZE_MARGIN = 7;
+QList<NoteWidget*> NoteWidget::existingNotes;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     : QWidget(parent),
@@ -268,6 +269,7 @@ void NoteWidget::deleteNote() {
         if (!filePath.isEmpty()) {
             QFile::remove(filePath);
         }
+        existingNotes.removeAll(this); // Remove this note from the list of existing notes
     });
 
     animation->start(); // Start the fade-out animation
@@ -284,8 +286,29 @@ void NoteWidget::createNewNote() {
     int posX = screenGeometry.right() - newNote->width() - 20; // Right border minus width and margin
     int posY = 20; // 20 pixels from the top
 
+    // Check for overlap with existing notes
+    QRect newNoteRect(posX, posY, newNote->width(), newNote->height());
+    const int offset = 20; // Margin for avoiding overlap
+
+    // Adjust position if overlapping
+    for (NoteWidget *existingNote : existingNotes) {
+        QRect existingNoteRect = existingNote->geometry();
+        if (newNoteRect.intersects(existingNoteRect)) {
+            // If overlap is detected, adjust the position
+            posY += existingNoteRect.height() + offset; // Move down by the height of the existing note + offset
+            newNoteRect.moveTo(posX, posY); // Update the new rectangle with the new position
+            // Reset posY to top if it exceeds the screen height
+            if (posY + newNote->height() > screenGeometry.bottom()) {
+                posY = 20; // Reset to top
+            }
+        }
+    }
+
     // Move the new note to the calculated position
-    newNote->move(posX, posY);
+    newNote->move(newNoteRect.topLeft());
+
+    // Add the new note to the list of existing notes
+    existingNotes.append(newNote);
 }
 
 void NoteWidget::savePosition() {
