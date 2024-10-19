@@ -49,7 +49,7 @@ void Qwote::createTrayIcon()
 
 void Qwote::createNewNote() {
     NoteWidget *newNote = new NoteWidget(nullptr, QString(), false); // No parent
-    newNote->show();
+    newNote->createNewNote();
 }
 
 bool Qwote::restoreSavedNotes() {
@@ -71,7 +71,7 @@ bool Qwote::restoreSavedNotes() {
 
         // Create a new NoteWidget and populate it with the data
         NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true); // Pass file path for restored notes
-        noteWidget->show(); // Show the restored note
+        //noteWidget->show();
     }
 
     return true;

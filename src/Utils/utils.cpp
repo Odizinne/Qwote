@@ -5,7 +5,6 @@
 #include <QDir>
 #include <QProcess>
 
-
 QString Utils::getTheme()
 {
     // Determine the theme based on registry value

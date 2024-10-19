@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QTextStream>
 #include <QPainter>
+#include <QPropertyAnimation>
 
 using namespace Utils;
 
@@ -223,8 +224,16 @@ void NoteWidget::loadNoteFromFile() {
             togglePinnedState();
         }
     }
-}
 
+    // Create and start the fade-in animation
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(300); // Duration of the fade in
+    animation->setStartValue(0); // Start from fully transparent
+    animation->setEndValue(1);   // End at fully opaque
+    setWindowOpacity(0);         // Set initial opacity
+    show();                      // Show the widget immediately
+    animation->start();          // Start the fade-in animation
+}
 
 void NoteWidget::setNoteTitle(const QString &title) {
     ui->noteTitleLineEdit->setText(title);
@@ -235,16 +244,31 @@ void NoteWidget::setNoteContent(const QString &content) {
 }
 
 void NoteWidget::deleteNote() {
-    if (!filePath.isEmpty()) {
-        QFile::remove(filePath);
-    }
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(300); // Duration of the fade out
+    animation->setStartValue(1); // Start from fully opaque
+    animation->setEndValue(0);   // End at fully transparent
 
-    this->close();
+    connect(animation, &QPropertyAnimation::finished, this, [this]() {
+        if (!filePath.isEmpty()) {
+            QFile::remove(filePath);
+        }
+        this->close(); // Close after fade out completes
+    });
+
+    animation->start(); // Start the fade-out animation
 }
+
 
 void NoteWidget::createNewNote() {
     NoteWidget *newNote = new NoteWidget();
-    newNote->show();
+    QPropertyAnimation *animation = new QPropertyAnimation(newNote, "windowOpacity");
+    animation->setDuration(300); // Duration of the fade in
+    animation->setStartValue(0); // Start from fully transparent
+    animation->setEndValue(1);   // End at fully opaque
+    newNote->setWindowOpacity(0); // Set initial opacity
+    newNote->show();              // Show the widget immediately
+    animation->start();           // Start the fade-in animation
 }
 
 void NoteWidget::savePosition() {
