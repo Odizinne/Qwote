@@ -47,6 +47,8 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
         this->move(posX, posY);
     }
 
+    existingNotes.append(this);
+
     connect(ui->closeButton, &QToolButton::clicked, this, &NoteWidget::deleteNote);
     connect(ui->pinButton, &QToolButton::clicked, this, &NoteWidget::togglePinnedState);
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
