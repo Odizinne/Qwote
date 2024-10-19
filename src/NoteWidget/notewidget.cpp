@@ -13,7 +13,7 @@
 #include <QRandomGenerator>
 
 using namespace Utils;
-const int resizeMargin = 10;
+const int resizeMargin = 7;
 QList<NoteWidget*> NoteWidget::existingNotes;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
