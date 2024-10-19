@@ -12,6 +12,8 @@
 
 using namespace Utils;
 
+const int RESIZE_MARGIN = 10;
+
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     : QWidget(parent),
     ui(new Ui::NoteWidget),
@@ -25,6 +27,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     setWindowTitle("New note");
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setMouseTracking(true);
 
     ui->newButton->setIcon(getIcon(1, false));
     ui->pinButton->setIcon(getIcon(2, false));
@@ -56,23 +59,86 @@ void NoteWidget::togglePinnedState() {
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        isDragging = true;
-        dragStartPosition = event->globalPosition().toPoint() - frameGeometry().topLeft();
+        QRect geom = geometry();
+        QPoint globalPos = event->globalPosition().toPoint();
+
+        if (abs(globalPos.x() - geom.right()) <= RESIZE_MARGIN || abs(globalPos.y() - geom.bottom()) <= RESIZE_MARGIN) {
+            isDragging = false;  // Disable dragging when resizing
+        } else {
+            isDragging = true;  // Normal dragging
+            dragStartPosition = globalPos - geom.topLeft();
+        }
         event->accept();
     }
 }
 
 void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
-    if (isDragging && (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPosition().toPoint() - dragStartPosition);
+    QRect geom = geometry();
+    QPoint globalPos = event->globalPosition().toPoint();
+    int left = geom.left();
+    int top = geom.top();
+    int right = geom.right();
+    int bottom = geom.bottom();
+
+    bool nearLeft = abs(globalPos.x() - left) <= RESIZE_MARGIN;
+    bool nearRight = abs(globalPos.x() - right) <= RESIZE_MARGIN;
+    bool nearTop = abs(globalPos.y() - top) <= RESIZE_MARGIN;
+    bool nearBottom = abs(globalPos.y() - bottom) <= RESIZE_MARGIN;
+
+    // Change cursor based on mouse proximity to edges/corners
+    if (nearLeft && nearTop) {
+        setCursor(Qt::SizeFDiagCursor);  // Top-left corner
+    } else if (nearRight && nearBottom) {
+        setCursor(Qt::SizeFDiagCursor);  // Bottom-right corner
+    } else if (nearLeft && nearBottom) {
+        setCursor(Qt::SizeBDiagCursor);  // Bottom-left corner
+    } else if (nearRight && nearTop) {
+        setCursor(Qt::SizeBDiagCursor);  // Top-right corner
+    } else if (nearRight) {
+        setCursor(Qt::SizeHorCursor);    // Right edge
+    } else if (nearLeft) {
+        setCursor(Qt::SizeHorCursor);    // Left edge
+    } else if (nearTop) {
+        setCursor(Qt::SizeVerCursor);    // Top edge
+    } else if (nearBottom) {
+        setCursor(Qt::SizeVerCursor);    // Bottom edge
+    } else {
+        setCursor(Qt::ArrowCursor);      // Default cursor when not near edges
+    }
+
+    // Handle resizing if the left button is pressed and we are near an edge
+    if (event->buttons() & Qt::LeftButton) {
+        QRect newGeom = geom;  // Create a new geometry for resizing
+        if (nearRight) {
+            newGeom.setRight(globalPos.x());
+        }
+        if (nearBottom) {
+            newGeom.setBottom(globalPos.y());
+        }
+        if (nearLeft) {
+            newGeom.setLeft(globalPos.x());
+        }
+        if (nearTop) {
+            newGeom.setTop(globalPos.y());
+        }
+
+        // Only resize if we are near an edge
+        if (nearRight || nearBottom || nearLeft || nearTop) {
+            setGeometry(newGeom);  // Apply the new geometry (resize)
+        } else {
+            // Handle dragging movement (when not resizing)
+            move(globalPos - dragStartPosition);
+        }
         event->accept();
     }
 }
 
+
 void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        isDragging = false;
-        savePosition();
+        isDragging = false; // Disable dragging after releasing mouse button
+        setCursor(Qt::ArrowCursor); // Restore default cursor
+        savePosition(); // Save the resized position
     }
 }
 
@@ -108,7 +174,9 @@ void NoteWidget::saveNote() {
     noteObject["content"] = noteContent;
     noteObject["posX"] = pos().x();
     noteObject["posY"] = pos().y();
-    noteObject["pinned"] = isPinned; // Save pinned state
+    noteObject["width"] = width();    // Save the widget's width
+    noteObject["height"] = height();  // Save the widget's height
+    noteObject["pinned"] = isPinned;   // Save pinned state
 
     QJsonDocument doc(noteObject);
 
@@ -118,6 +186,7 @@ void NoteWidget::saveNote() {
         file.close();
     }
 }
+
 
 void NoteWidget::loadNoteFromFile() {
     if (filePath.isEmpty()) {
@@ -141,6 +210,11 @@ void NoteWidget::loadNoteFromFile() {
             QPoint position(noteObject.value("posX").toInt(), noteObject.value("posY").toInt());
             restorePosition(position);
 
+            // Load width and height from the saved object and resize the widget
+            int width = noteObject.value("width").toInt();
+            int height = noteObject.value("height").toInt();
+            resize(width, height); // Restore the size of the widget
+
             isPinned = noteObject.value("pinned").toBool();
             ui->pinButton->setChecked(isPinned);
             ui->pinButton->setIcon(getIcon(2, isPinned));
@@ -148,6 +222,7 @@ void NoteWidget::loadNoteFromFile() {
         }
     }
 }
+
 
 void NoteWidget::setNoteTitle(const QString &title) {
     ui->noteTitleLineEdit->setText(title);
