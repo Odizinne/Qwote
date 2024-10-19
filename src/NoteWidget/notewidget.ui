@@ -35,6 +35,12 @@
        <height>26</height>
       </size>
      </property>
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="maxLength">
       <number>1000</number>
      </property>
@@ -73,7 +79,14 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="4">
-    <widget class="QTextEdit" name="noteTextEdit"/>
+    <widget class="QTextEdit" name="noteTextEdit">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

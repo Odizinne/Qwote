@@ -35,7 +35,6 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
         createNewNoteFile();
     }
 
-    // Save whenever the text or title changes
     connect(ui->closeButton, &QToolButton::clicked, this, &NoteWidget::deleteNote);
     connect(ui->pinButton, &QToolButton::clicked, this, &NoteWidget::togglePinnedState);
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
@@ -49,7 +48,7 @@ NoteWidget::~NoteWidget() {
 
 void NoteWidget::togglePinnedState() {
     isPinned = ui->pinButton->isChecked();
-    setWindowFlags(isPinned ? Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint : Qt::Window | Qt::FramelessWindowHint);
+    setWindowFlag(Qt::WindowStaysOnTopHint, isPinned);
     ui->pinButton->setIcon(getIcon(2, isPinned));
     show();
     saveNote();
@@ -73,32 +72,27 @@ void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
 void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
-        savePosition();  // Save the position when the mouse is released
+        savePosition();
     }
 }
 
 void NoteWidget::createNewNoteFile() {
-    // Get the AppData location
     QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     QDir dir(appDataLocation);
     if (!dir.exists()) {
-        dir.mkpath(appDataLocation); // Ensure the directory exists
+        dir.mkpath(appDataLocation);
     }
 
-    // Find a unique filename
     int i = 1;
     QString baseFileName;
     do {
         baseFileName = QString("note-%1.json").arg(i++);
     } while (QFile::exists(appDataLocation + "/" + baseFileName));
 
-    // Set the file path for this note
     filePath = appDataLocation + "/" + baseFileName;
 
-    // Save the empty note initially
     saveNote();
-    savePosition(); // Save the initial position (0,0) by default
 }
 
 void NoteWidget::saveNote() {

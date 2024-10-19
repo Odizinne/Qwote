@@ -21,7 +21,6 @@ public:
     void deleteNote();
     static void createNewNote();
 
-    // New methods for saving and restoring position
     void savePosition();
     void restorePosition(const QPoint &position);
 
