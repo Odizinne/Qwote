@@ -37,3 +37,7 @@ opm install qwote
 ```
 
 Qwote will be available in your start menu.
+
+## Credits
+
+Using edited icons from [veryicon](https://www.veryicon.com/).
