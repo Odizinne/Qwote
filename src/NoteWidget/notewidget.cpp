@@ -10,6 +10,7 @@
 #include <QTextStream>
 #include <QPainter>
 #include <QPropertyAnimation>
+#include <QRandomGenerator>
 
 using namespace Utils;
 const int resizeMargin = 10;
@@ -243,6 +244,23 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
 }
 
 void NoteWidget::setTitleColor() {
+    QStringList placeholders = {
+        "shopping list",
+        "Give it a name",
+        "Name this note",
+        "My super note",
+        "Remember This",
+        "Quick Thoughts",
+        "Note to Self",
+        "Code Snippets",
+        "Work in Progress",
+        "Ideas",
+        "Workflows"
+    };
+
+    int randomIndex = QRandomGenerator::global()->bounded(placeholders.size());
+    QString randomPlaceholder = placeholders[randomIndex];
+
     QPalette palette = ui->noteTitleLineEdit->palette();
     if (getTheme() == "dark") {
         palette.setColor(QPalette::Text, getAccentColor("dark2"));
@@ -251,7 +269,7 @@ void NoteWidget::setTitleColor() {
     }
     ui->noteTitleLineEdit->setPalette(palette);
 
-    ui->noteTitleLineEdit->setPlaceholderText("Name this note");
+    ui->noteTitleLineEdit->setPlaceholderText(randomPlaceholder);
 }
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
