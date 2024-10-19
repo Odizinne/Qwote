@@ -26,7 +26,7 @@ QString toHex(BYTE value) {
 }
 
 // Function to fetch the accent color directly from the Windows registry
-QString getAccentColor(const QString &accentKey)
+QString Utils::getAccentColor(const QString &accentKey)
 {
     HKEY hKey;
     BYTE accentPalette[32];  // AccentPalette contains 32 bytes

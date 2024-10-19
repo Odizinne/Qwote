@@ -42,6 +42,7 @@
       <font>
        <family>Consolas</family>
        <pointsize>12</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="maxLength">
@@ -86,7 +87,7 @@
      <property name="font">
       <font>
        <family>Consolas</family>
-       <pointsize>12</pointsize>
+       <pointsize>11</pointsize>
       </font>
      </property>
     </widget>

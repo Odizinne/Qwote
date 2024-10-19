@@ -12,7 +12,7 @@
 
 using namespace Utils;
 
-const int RESIZE_MARGIN = 10;
+const int RESIZE_MARGIN = 7;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     : QWidget(parent),
@@ -32,6 +32,11 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     ui->newButton->setIcon(getIcon(1, false));
     ui->pinButton->setIcon(getIcon(2, false));
     ui->closeButton->setIcon(getIcon(3, false));
+
+    QPalette palette = ui->noteTitleLineEdit->palette();
+    palette.setColor(QPalette::Text, getAccentColor("normal"));
+    ui->noteTitleLineEdit->setPalette(palette);
+
     if (isRestored) {
         loadNoteFromFile();
     } else {

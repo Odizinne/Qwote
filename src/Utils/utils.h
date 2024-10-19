@@ -6,6 +6,7 @@
 
 namespace Utils {
     bool isWindows10();
+    QString getAccentColor(const QString &accentKey);
     QIcon getIcon(int icon, bool pinned);
 }
 
