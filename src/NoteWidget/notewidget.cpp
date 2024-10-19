@@ -1,5 +1,6 @@
 #include "notewidget.h"
 #include "ui_notewidget.h"
+#include "utils.h"
 #include <QMouseEvent>
 #include <QStandardPaths>
 #include <QFile>
@@ -8,6 +9,8 @@
 #include <QDir>
 #include <QTextStream>
 #include <QPainter>
+
+using namespace Utils;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     : QWidget(parent),
@@ -23,6 +26,9 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
+    ui->newButton->setIcon(getIcon(1, false));
+    ui->pinButton->setIcon(getIcon(2, false));
+    ui->closeButton->setIcon(getIcon(3, false));
     if (isRestored) {
         loadNoteFromFile();
     } else {
@@ -44,6 +50,7 @@ NoteWidget::~NoteWidget() {
 void NoteWidget::togglePinnedState() {
     isPinned = ui->pinButton->isChecked();
     setWindowFlags(isPinned ? Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint : Qt::Window | Qt::FramelessWindowHint);
+    ui->pinButton->setIcon(getIcon(2, isPinned));
     show();
     saveNote();
 }
@@ -142,6 +149,7 @@ void NoteWidget::loadNoteFromFile() {
 
             isPinned = noteObject.value("pinned").toBool();
             ui->pinButton->setChecked(isPinned);
+            ui->pinButton->setIcon(getIcon(2, isPinned));
             togglePinnedState();
         }
     }

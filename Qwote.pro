@@ -12,18 +12,21 @@ INCLUDEPATH += \
     src/ \
     src/NoteWidget/ \
     src/Qwote/ \
-    src/ShortcutManager/
+    src/ShortcutManager/ \
+    src/Utils/
 
 SOURCES += \
     src/main.cpp \
     src/NoteWidget/notewidget.cpp \
     src/Qwote/qwote.cpp \
-    src/ShortcutManager/shortcutmanager.cpp
+    src/ShortcutManager/shortcutmanager.cpp \
+    src/Utils/utils.cpp
 
 HEADERS += \
     src/NoteWidget/notewidget.h \
     src/Qwote/qwote.h \
-    src/ShortcutManager/shortcutmanager.h
+    src/ShortcutManager/shortcutmanager.h \
+    src/Utils/utils.h
 
 FORMS += \
     src/NoteWidget/notewidget.ui
@@ -32,6 +35,8 @@ RESOURCES += \
     src/Resources/resources.qrc \
 
 RC_FILE = src/Resources/appicon.rc
+
+LIBS += -luser32 -ladvapi32 -lwinmm
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
