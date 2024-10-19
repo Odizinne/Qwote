@@ -39,6 +39,11 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
         loadNoteFromFile();
     } else {
         createNewNoteFile();
+
+        QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+        int posX = screenGeometry.right() - this->width() - 20;
+        int posY = 20;
+        this->move(posX, posY);
     }
 
     connect(ui->closeButton, &QToolButton::clicked, this, &NoteWidget::deleteNote);
@@ -46,6 +51,15 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::saveNote);
     connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::onNoteTitleChanged);
+
+
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(150);
+    animation->setStartValue(0);
+    animation->setEndValue(1);
+    setWindowOpacity(0);
+    show();
+    animation->start();
 }
 
 NoteWidget::~NoteWidget() {
@@ -227,7 +241,7 @@ void NoteWidget::loadNoteFromFile() {
 
     // Create and start the fade-in animation
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(300); // Duration of the fade in
+    animation->setDuration(150); // Duration of the fade in
     animation->setStartValue(0); // Start from fully transparent
     animation->setEndValue(1);   // End at fully opaque
     setWindowOpacity(0);         // Set initial opacity
@@ -245,30 +259,33 @@ void NoteWidget::setNoteContent(const QString &content) {
 
 void NoteWidget::deleteNote() {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(300); // Duration of the fade out
+    animation->setDuration(150); // Duration of the fade out
     animation->setStartValue(1); // Start from fully opaque
     animation->setEndValue(0);   // End at fully transparent
 
     connect(animation, &QPropertyAnimation::finished, this, [this]() {
+        this->close();
         if (!filePath.isEmpty()) {
             QFile::remove(filePath);
         }
-        this->close(); // Close after fade out completes
     });
 
     animation->start(); // Start the fade-out animation
 }
 
-
 void NoteWidget::createNewNote() {
+    // Create a new instance of NoteWidget
     NoteWidget *newNote = new NoteWidget();
-    QPropertyAnimation *animation = new QPropertyAnimation(newNote, "windowOpacity");
-    animation->setDuration(300); // Duration of the fade in
-    animation->setStartValue(0); // Start from fully transparent
-    animation->setEndValue(1);   // End at fully opaque
-    newNote->setWindowOpacity(0); // Set initial opacity
-    newNote->show();              // Show the widget immediately
-    animation->start();           // Start the fade-in animation
+
+    // Get the available geometry of the primary screen
+    QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+
+    // Calculate the desired position (20px from the top and right)
+    int posX = screenGeometry.right() - newNote->width() - 20; // Right border minus width and margin
+    int posY = 20; // 20 pixels from the top
+
+    // Move the new note to the calculated position
+    newNote->move(posX, posY);
 }
 
 void NoteWidget::savePosition() {

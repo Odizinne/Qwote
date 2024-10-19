@@ -49,7 +49,7 @@ void Qwote::createTrayIcon()
 
 void Qwote::createNewNote() {
     NoteWidget *newNote = new NoteWidget(nullptr, QString(), false); // No parent
-    newNote->createNewNote();
+    //newNote->createNewNote();
 }
 
 bool Qwote::restoreSavedNotes() {
