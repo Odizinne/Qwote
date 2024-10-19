@@ -11,6 +11,7 @@ class Qwote : public QWidget
 public:
     explicit Qwote(QWidget *parent = nullptr);
     ~Qwote();
+    void createNewNote();
 
 private slots:
     void onStartupActionStateChanged();
@@ -21,7 +22,6 @@ private:
     QSystemTrayIcon *trayIcon;
     QAction *startupAction;
     bool restoreSavedNotes();
-    void createNewNote();
     QList<NoteWidget*> noteWidgets;
 
 signals:
