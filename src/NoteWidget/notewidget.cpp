@@ -45,6 +45,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
         int posX = screenGeometry.right() - this->width() - 20;
         int posY = 20;
         this->move(posX, posY);
+        saveNote();
     }
 
     existingNotes.append(this);
@@ -178,7 +179,7 @@ void NoteWidget::createNewNoteFile() {
 
     filePath = appDataLocation + "/" + baseFileName;
 
-    saveNote();
+    //saveNote();
 }
 
 void NoteWidget::saveNote() {
