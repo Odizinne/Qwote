@@ -37,7 +37,7 @@ void Qwote::createTrayIcon()
 }
 
 void Qwote::createNewNote() {
-    NoteWidget *newNote = new NoteWidget(this, QString(), false); // Pass an empty path for new notes
+    NoteWidget *newNote = new NoteWidget(nullptr, QString(), false); // No parent
     newNote->show();
 }
 
