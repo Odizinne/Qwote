@@ -27,6 +27,8 @@ public:
 
 private slots:
     void togglePinnedState();
+    void onNoteTitleChanged();
+
 private:
     Ui::NoteWidget *ui;
     bool isDragging;

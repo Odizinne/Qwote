@@ -18,7 +18,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
 {
     ui->setupUi(this);
     ui->noteTitleLineEdit->setPlaceholderText("Name this note");
-
+    setWindowTitle("New note");
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     if (isRestored) {
@@ -32,7 +32,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     connect(ui->pinButton, &QToolButton::clicked, this, &NoteWidget::togglePinnedState);
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::saveNote);
-    connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::saveNote);
+    connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::onNoteTitleChanged);
 }
 
 NoteWidget::~NoteWidget() {
@@ -131,7 +131,7 @@ void NoteWidget::loadNoteFromFile() {
             QJsonObject noteObject = jsonDoc.object();
             QString noteTitle = noteObject.value("title").toString();
             QString noteContent = noteObject.value("content").toString();
-
+            setWindowTitle(noteTitle);
             setNoteTitle(noteTitle);
             setNoteContent(noteContent);
 
@@ -174,4 +174,9 @@ void NoteWidget::savePosition() {
 
 void NoteWidget::restorePosition(const QPoint &position) {
     move(position);
+}
+
+void NoteWidget::onNoteTitleChanged() {
+    saveNote();
+    setWindowTitle(ui->noteTitleLineEdit->text());
 }
