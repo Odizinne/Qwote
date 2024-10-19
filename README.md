@@ -4,7 +4,7 @@
 
 ## Features
 
-Qwote features a tray icon.  
+Qwote feature a tray icon.  
 With it you can create new notes or exit the app.
 
 Notes features 3 buttons:
