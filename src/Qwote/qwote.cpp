@@ -21,6 +21,11 @@ Qwote::Qwote(QWidget *parent)
     }
 }
 
+Qwote::~Qwote() {
+    qDeleteAll(noteWidgets);
+    noteWidgets.clear();
+}
+
 void Qwote::createTrayIcon()
 {
     trayIcon->setIcon(QIcon(":/icons/postit_icon.png"));
@@ -49,7 +54,7 @@ void Qwote::createTrayIcon()
 
 void Qwote::createNewNote() {
     NoteWidget *newNote = new NoteWidget(nullptr, QString(), false); // No parent
-    //newNote->createNewNote();
+    noteWidgets.append(newNote);
 }
 
 bool Qwote::restoreSavedNotes() {
@@ -71,7 +76,7 @@ bool Qwote::restoreSavedNotes() {
 
         // Create a new NoteWidget and populate it with the data
         NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true); // Pass file path for restored notes
-        //noteWidget->show();
+        noteWidgets.append(noteWidget);
     }
 
     return true;

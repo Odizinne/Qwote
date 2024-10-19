@@ -3,12 +3,14 @@
 
 #include <QWidget>
 #include <QSystemTrayIcon>
+#include "notewidget.h"
 
 class Qwote : public QWidget
 {
     Q_OBJECT
 public:
     explicit Qwote(QWidget *parent = nullptr);
+    ~Qwote();
 
 private slots:
     void onStartupActionStateChanged();
@@ -19,6 +21,7 @@ private:
     QAction *startupAction;
     bool restoreSavedNotes();
     void createNewNote();
+    QList<NoteWidget*> noteWidgets;
 
 signals:
 };

@@ -260,20 +260,23 @@ void NoteWidget::setNoteContent(const QString &content) {
 
 void NoteWidget::deleteNote() {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(250); // Duration of the fade out
-    animation->setStartValue(1); // Start from fully opaque
-    animation->setEndValue(0);   // End at fully transparent
+    animation->setDuration(250);
+    animation->setStartValue(1);
+    animation->setEndValue(0);
 
-    connect(animation, &QPropertyAnimation::finished, this, [this]() {
-        this->close();
+    connect(animation, &QPropertyAnimation::finished, this, [this, animation]() {
+        // Cleanup the animation
+        animation->deleteLater(); // Prevent memory leak
         if (!filePath.isEmpty()) {
             QFile::remove(filePath);
         }
-        existingNotes.removeAll(this); // Remove this note from the list of existing notes
+        existingNotes.removeAll(this);
+        this->deleteLater(); // Safely delete the widget
     });
 
     animation->start(); // Start the fade-out animation
 }
+
 
 void NoteWidget::createNewNote() {
     // Create a new instance of NoteWidget
