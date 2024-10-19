@@ -55,7 +55,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
 
 
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(150);
+    animation->setDuration(250);
     animation->setStartValue(0);
     animation->setEndValue(1);
     setWindowOpacity(0);
@@ -242,7 +242,7 @@ void NoteWidget::loadNoteFromFile() {
 
     // Create and start the fade-in animation
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(150); // Duration of the fade in
+    animation->setDuration(250); // Duration of the fade in
     animation->setStartValue(0); // Start from fully transparent
     animation->setEndValue(1);   // End at fully opaque
     setWindowOpacity(0);         // Set initial opacity
@@ -260,7 +260,7 @@ void NoteWidget::setNoteContent(const QString &content) {
 
 void NoteWidget::deleteNote() {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(150); // Duration of the fade out
+    animation->setDuration(250); // Duration of the fade out
     animation->setStartValue(1); // Start from fully opaque
     animation->setEndValue(0);   // End at fully transparent
 
