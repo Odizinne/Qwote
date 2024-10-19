@@ -59,7 +59,7 @@ bool Qwote::restoreSavedNotes() {
         QString filePath = appDataLocation + "/" + noteFile;
 
         // Create a new NoteWidget and populate it with the data
-        NoteWidget *noteWidget = new NoteWidget(this, filePath, true); // Pass file path for restored notes
+        NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true); // Pass file path for restored notes
         noteWidget->show(); // Show the restored note
     }
 
