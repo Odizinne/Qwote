@@ -37,6 +37,8 @@ private:
     QPoint dragStartPosition;
     bool isPinned;
     void setTitleColor();
+    void placeNote();
+    void fadeIn();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

@@ -37,25 +37,19 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
 
     if (isRestored) {
         loadNoteFromFile();
+        existingNotes.append(this);
     } else {
         createNewNoteFile();
-
-        QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
-        int posX = screenGeometry.right() - this->width() - 20;
-        int posY = 20;
-        this->move(posX, posY);
+        placeNote();
+        existingNotes.append(this);
         saveNote();
-
     }
-
-    existingNotes.append(this);
 
     connect(ui->closeButton, &QToolButton::clicked, this, &NoteWidget::deleteNote);
     connect(ui->pinButton, &QToolButton::clicked, this, &NoteWidget::togglePinnedState);
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::saveNote);
     connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::onNoteTitleChanged);
-
 
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
     animation->setDuration(250);
@@ -78,6 +72,34 @@ void NoteWidget::togglePinnedState() {
     saveNote();
 }
 
+void NoteWidget::placeNote() {
+    QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+
+    // Calculate the desired position (20px from the top and right)
+    int posX = screenGeometry.right() - this->width() - 20; // Right border minus width and margin
+    int posY = 20; // 20 pixels from the top
+
+    // Check for overlap with existing notes
+    QRect newNoteRect(posX, posY, this->width(), this->height());
+    const int offset = 20; // Margin for avoiding overlap
+
+    // Adjust position if overlapping
+    for (NoteWidget *existingNote : existingNotes) {
+        QRect existingNoteRect = existingNote->geometry();
+        if (newNoteRect.intersects(existingNoteRect)) {
+            // If overlap is detected, adjust the position
+            posY += existingNoteRect.height() + offset; // Move down by the height of the existing note + offset
+            newNoteRect.moveTo(posX, posY); // Update the new rectangle with the new position
+            // Reset posY to top if it exceeds the screen height
+            if (posY + this->height() > screenGeometry.bottom()) {
+                posY = 20; // Reset to top
+            }
+        }
+    }
+
+    // Move the new note to the calculated position
+    this->move(newNoteRect.topLeft());
+}
 void NoteWidget::createNewNoteFile() {
     QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -151,14 +173,7 @@ void NoteWidget::loadNoteFromFile() {
         }
     }
 
-    // Create and start the fade-in animation
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(250); // Duration of the fade in
-    animation->setStartValue(0); // Start from fully transparent
-    animation->setEndValue(1);   // End at fully opaque
-    setWindowOpacity(0);         // Set initial opacity
-    show();                      // Show the widget immediately
-    animation->start();          // Start the fade-in animation
+    fadeIn();
 }
 
 void NoteWidget::setNoteTitle(const QString &title) {
@@ -190,39 +205,8 @@ void NoteWidget::deleteNote() {
 
 
 void NoteWidget::createNewNote() {
-    // Create a new instance of NoteWidget
-    NoteWidget *newNote = new NoteWidget();
-
-    // Get the available geometry of the primary screen
-    QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
-
-    // Calculate the desired position (20px from the top and right)
-    int posX = screenGeometry.right() - newNote->width() - 20; // Right border minus width and margin
-    int posY = 20; // 20 pixels from the top
-
-    // Check for overlap with existing notes
-    QRect newNoteRect(posX, posY, newNote->width(), newNote->height());
-    const int offset = 20; // Margin for avoiding overlap
-
-    // Adjust position if overlapping
-    for (NoteWidget *existingNote : existingNotes) {
-        QRect existingNoteRect = existingNote->geometry();
-        if (newNoteRect.intersects(existingNoteRect)) {
-            // If overlap is detected, adjust the position
-            posY += existingNoteRect.height() + offset; // Move down by the height of the existing note + offset
-            newNoteRect.moveTo(posX, posY); // Update the new rectangle with the new position
-            // Reset posY to top if it exceeds the screen height
-            if (posY + newNote->height() > screenGeometry.bottom()) {
-                posY = 20; // Reset to top
-            }
-        }
-    }
-
-    // Move the new note to the calculated position
-    newNote->move(newNoteRect.topLeft());
-
-    // Add the new note to the list of existing notes
-    existingNotes.append(newNote);
+    //NoteWidget *newNote = new NoteWidget();
+    new NoteWidget();
 }
 
 void NoteWidget::savePosition() {
@@ -267,24 +251,33 @@ void NoteWidget::setTitleColor() {
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = true;
-        dragStartPosition = event->pos(); // Store the starting position of the drag
-        // Capture the mouse to ensure the widget receives all mouse move events
+        dragStartPosition = event->pos();
         this->setMouseTracking(true);
     }
 }
 
 void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
-        // Calculate the new position of the widget
         QPoint newPos = this->pos() + (event->pos() - dragStartPosition);
-        this->move(newPos); // Move the widget to the new position
+        this->move(newPos);
     }
 }
 
 void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        isDragging = false; // Stop dragging
-        this->releaseMouse(); // Release the mouse
-        savePosition(); // Save the new position
+        isDragging = false;
+        this->releaseMouse();
+        savePosition();
     }
 }
+
+void NoteWidget::fadeIn() {
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(250);
+    animation->setStartValue(0);
+    animation->setEndValue(1);
+    setWindowOpacity(0);
+    show();
+    animation->start();
+}
+
