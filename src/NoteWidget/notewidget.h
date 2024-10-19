@@ -35,6 +35,7 @@ private:
     bool isRestored;
     QPoint dragStartPosition;
     bool isPinned;
+    void setTitleColor();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

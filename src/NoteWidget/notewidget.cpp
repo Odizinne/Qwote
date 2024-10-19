@@ -23,19 +23,16 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     isPinned(false)
 {
     ui->setupUi(this);
-    ui->noteTitleLineEdit->setPlaceholderText("Name this note");
     setWindowTitle("New note");
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setMouseTracking(true);
 
+    setTitleColor();
+
     ui->newButton->setIcon(getIcon(1, false));
     ui->pinButton->setIcon(getIcon(2, false));
     ui->closeButton->setIcon(getIcon(3, false));
-
-    QPalette palette = ui->noteTitleLineEdit->palette();
-    palette.setColor(QPalette::Text, getAccentColor("normal"));
-    ui->noteTitleLineEdit->setPalette(palette);
 
     if (isRestored) {
         loadNoteFromFile();
@@ -68,9 +65,9 @@ void NoteWidget::mousePressEvent(QMouseEvent *event) {
         QPoint globalPos = event->globalPosition().toPoint();
 
         if (abs(globalPos.x() - geom.right()) <= RESIZE_MARGIN || abs(globalPos.y() - geom.bottom()) <= RESIZE_MARGIN) {
-            isDragging = false;  // Disable dragging when resizing
+            isDragging = false;
         } else {
-            isDragging = true;  // Normal dragging
+            isDragging = true;
             dragStartPosition = globalPos - geom.topLeft();
         }
         event->accept();
@@ -275,4 +272,16 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     painter.setBrush(backgroundColor);
     painter.setPen(Qt::transparent);
     painter.drawRoundedRect(rect(), 8, 8);
+}
+
+void NoteWidget::setTitleColor() {
+    QPalette palette = ui->noteTitleLineEdit->palette();
+    if (getTheme() == "dark") {
+        palette.setColor(QPalette::Text, getAccentColor("dark2"));
+    } else {
+        palette.setColor(QPalette::Text, getAccentColor("light3"));
+    }
+    ui->noteTitleLineEdit->setPalette(palette);
+
+    ui->noteTitleLineEdit->setPlaceholderText("Name this note");
 }

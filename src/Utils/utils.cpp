@@ -6,7 +6,7 @@
 #include <QProcess>
 
 
-QString getTheme()
+QString Utils::getTheme()
 {
     // Determine the theme based on registry value
     QSettings settings(
@@ -95,7 +95,11 @@ QIcon Utils::getIcon(int icon, bool pinned) {
     } else if (icon == 2) {
         iconPixmap = QPixmap(":/icons/pin_icon.png");
         if (pinned) {
-            recolor = getAccentColor("normal");
+            if (theme == "dark") {
+                recolor = getAccentColor("dark2");
+            } else {
+                recolor = getAccentColor("light3");
+            }
         }
     } else {
         iconPixmap = QPixmap(":/icons/delete_icon.png");
