@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QDir>
 #include <QTextStream>
+#include <QPainter>
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     : QWidget(parent),
@@ -19,6 +20,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     ui->setupUi(this);
     ui->noteTitleLineEdit->setPlaceholderText("Name this note");
     setWindowTitle("New note");
+    setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     if (isRestored) {
@@ -179,4 +181,20 @@ void NoteWidget::restorePosition(const QPoint &position) {
 void NoteWidget::onNoteTitleChanged() {
     saveNote();
     setWindowTitle(ui->noteTitleLineEdit->text());
+}
+
+void NoteWidget::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+
+    QPainter painter(this);
+
+    // Get the background color from the parent widget or application style
+    QColor backgroundColor;
+
+    backgroundColor = this->palette().color(QPalette::Window);
+    qDebug() << backgroundColor;
+
+    painter.setBrush(backgroundColor);
+    painter.setPen(Qt::transparent);
+    painter.drawRoundedRect(rect(), 8, 8); // 5px radius for corners
 }
