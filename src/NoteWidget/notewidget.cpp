@@ -185,16 +185,12 @@ void NoteWidget::onNoteTitleChanged() {
 
 void NoteWidget::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-
     QPainter painter(this);
 
-    // Get the background color from the parent widget or application style
     QColor backgroundColor;
-
     backgroundColor = this->palette().color(QPalette::Window);
-    qDebug() << backgroundColor;
 
     painter.setBrush(backgroundColor);
     painter.setPen(Qt::transparent);
-    painter.drawRoundedRect(rect(), 8, 8); // 5px radius for corners
+    painter.drawRoundedRect(rect(), 8, 8);
 }

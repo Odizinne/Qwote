@@ -1,5 +1,6 @@
 #include "qwote.h"
 #include "notewidget.h"
+#include "shortcutmanager.h"
 #include <QMenu>
 #include <QApplication>
 #include <QStandardPaths>
@@ -7,6 +8,8 @@
 #include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
+
+using namespace ShortcutManager;
 
 Qwote::Qwote(QWidget *parent)
     : QWidget{parent}
@@ -26,6 +29,14 @@ void Qwote::createTrayIcon()
     QAction *newAction = new QAction("New note", this);
     connect(newAction, &QAction::triggered, this, &Qwote::createNewNote);
     trayMenu->addAction(newAction);
+
+    startupAction = new QAction("Start with system", this);
+    startupAction->setCheckable(true);
+    startupAction->setChecked(isShortcutPresent());
+    connect(startupAction, &QAction::triggered, this, &Qwote::onStartupActionStateChanged);
+    trayMenu->addAction(startupAction);
+
+    trayMenu->addSeparator();
 
     QAction *exitAction = new QAction("Exit", this);
     connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);
@@ -64,4 +75,8 @@ bool Qwote::restoreSavedNotes() {
     }
 
     return true;
+}
+
+void Qwote::onStartupActionStateChanged() {
+    manageShortcut(startupAction->isChecked());
 }

@@ -11,16 +11,19 @@ CONFIG += c++17
 INCLUDEPATH += \
     src/ \
     src/NoteWidget/ \
-    src/Qwote/
+    src/Qwote/ \
+    src/ShortcutManager/
 
 SOURCES += \
     src/main.cpp \
     src/NoteWidget/notewidget.cpp \
-    src/Qwote/qwote.cpp
+    src/Qwote/qwote.cpp \
+    src/ShortcutManager/shortcutmanager.cpp
 
 HEADERS += \
     src/NoteWidget/notewidget.h \
-    src/Qwote/qwote.h
+    src/Qwote/qwote.h \
+    src/ShortcutManager/shortcutmanager.h
 
 FORMS += \
     src/NoteWidget/notewidget.ui
