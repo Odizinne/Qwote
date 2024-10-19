@@ -8,20 +8,27 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += \
+    src/ \
+    src/NoteWidget/ \
+    src/Qwote/
+
 SOURCES += \
-    main.cpp \
-    notewidget.cpp \
-    qwote.cpp
+    src/main.cpp \
+    src/NoteWidget/notewidget.cpp \
+    src/Qwote/qwote.cpp
 
 HEADERS += \
-    notewidget.h \
-    qwote.h
+    src/NoteWidget/notewidget.h \
+    src/Qwote/qwote.h
 
 FORMS += \
-    notewidget.ui
+    src/NoteWidget/notewidget.ui
 
 RESOURCES += \
-    Resources/resources.qrc \
+    src/Resources/resources.qrc \
+
+RC_FILE = src/Resources/appicon.rc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
