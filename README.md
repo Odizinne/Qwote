@@ -4,8 +4,12 @@
 
 ## Features
 
-Qwote feature a tray icon.  
-With it you can create new notes or exit the app.
+Qwote feature a tray icon. With it you can:
+
+- Create new note
+- Set default font
+- Delete all opened notes
+- Exit
 
 Notes features 3 buttons:
 
@@ -16,6 +20,17 @@ Notes features 3 buttons:
 Pin button will keep your notes on top of other windows.
 
 Notes closed with delete button will not be saved / reloaded across app restart.
+
+You can use keyboard shortcuts to adjust font size.
+
+- `ctrl` + `+`, `ctrl` + `=`  
+Adjust size up (max 16px)
+
+- `ctrl` + `-`  
+Adjust size down (min 8px)
+
+- `ctrl` + `0`  
+Reset to default size (11px)
 
 ## Installation
 

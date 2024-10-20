@@ -400,16 +400,18 @@ void NoteWidget::updateCursorShape(const QPoint &pos) {
 
 void NoteWidget::keyPressEvent(QKeyEvent *event) {
     if (event->modifiers() & Qt::ControlModifier) {
-        if (event->key() == Qt::Key_Equal || event->key() == Qt::Key_Plus) {
+        QString text = event->text();  // Get the actual text representation
+
+        if (text == "+" || text == "=") {
             increaseFontSize();  // Ctrl + or Ctrl =
-        } else if (event->key() == Qt::Key_Minus) {
+        } else if (text == "-") {
             decreaseFontSize();  // Ctrl -
-        } else if (event->key() == Qt::Key_0) {
+        } else if (text == "0") {
             resetFontSize();  // Ctrl 0
         }
     }
 
-    QWidget::keyPressEvent(event);  // Pass to base class
+    QWidget::keyPressEvent(event);
 }
 
 void NoteWidget::increaseFontSize() {

@@ -71,7 +71,6 @@ void Qwote::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 
 void Qwote::createNewNote() {
-    qDebug() << "pass";
     NoteWidget *newNote = new NoteWidget(nullptr, QString(), false, this); // Pass the Qwote instance
     noteWidgets.append(newNote);
 
