@@ -127,10 +127,12 @@ void NoteWidget::saveNote() {
 
     QString noteTitle = ui->noteTitleLineEdit->text();
     QString noteContent = ui->noteTextEdit->toPlainText();
+    int fontSize = ui->noteTextEdit->font().pointSize();  // Get current font size
 
     QJsonObject noteObject;
     noteObject["title"] = noteTitle;
     noteObject["content"] = noteContent;
+    noteObject["fontSize"] = fontSize;  // Save font size
     noteObject["posX"] = pos().x();
     noteObject["posY"] = pos().y();
     noteObject["width"] = this->width();
@@ -145,7 +147,6 @@ void NoteWidget::saveNote() {
         file.close();
     }
 }
-
 
 void NoteWidget::loadNoteFromFile() {
     if (filePath.isEmpty()) {
@@ -166,12 +167,15 @@ void NoteWidget::loadNoteFromFile() {
             setNoteTitle(noteTitle);
             setNoteContent(noteContent);
 
+            int fontSize = noteObject.value("fontSize").toInt(11);  // Default to 11 if not found
+            setTextEditFontSize(fontSize);
+
             QPoint position(noteObject.value("posX").toInt(), noteObject.value("posY").toInt());
             restorePosition(position);
 
-            int width = noteObject.value("width").toInt(this->width());   // Load the width
-            int height = noteObject.value("height").toInt(this->height()); // Load the height
-            this->resize(width, height);  // Resize the widget
+            int width = noteObject.value("width").toInt(this->width());
+            int height = noteObject.value("height").toInt(this->height());
+            this->resize(width, height);
 
             isPinned = noteObject.value("pinned").toBool();
             ui->pinButton->setChecked(isPinned);
@@ -181,6 +185,12 @@ void NoteWidget::loadNoteFromFile() {
     }
 
     fadeIn();
+}
+
+void NoteWidget::setTextEditFontSize(int fontSize) {
+    QFont font = ui->noteTextEdit->font();
+    font.setPointSize(fontSize);
+    ui->noteTextEdit->setFont(font);
 }
 
 void NoteWidget::setNoteTitle(const QString &title) {
@@ -375,4 +385,43 @@ void NoteWidget::updateCursorShape(const QPoint &pos) {
     }
 
     resizeDirection = detectedEdges; // Store the current edge for resizing
+}
+
+void NoteWidget::keyPressEvent(QKeyEvent *event) {
+    if (event->modifiers() & Qt::ControlModifier) {
+        if (event->key() == Qt::Key_Equal || event->key() == Qt::Key_Plus) {
+            increaseFontSize();  // Ctrl + or Ctrl =
+        } else if (event->key() == Qt::Key_Minus) {
+            decreaseFontSize();  // Ctrl -
+        } else if (event->key() == Qt::Key_0) {
+            resetFontSize();  // Ctrl 0
+        }
+    }
+
+    QWidget::keyPressEvent(event);  // Pass to base class
+}
+
+void NoteWidget::increaseFontSize() {
+    QFont font = ui->noteTextEdit->font();
+    int currentSize = font.pointSize();
+    if (currentSize < 14) {
+        font.setPointSize(currentSize + 1);
+        ui->noteTextEdit->setFont(font);
+        saveNote();
+    }
+}
+
+void NoteWidget::decreaseFontSize() {
+    QFont font = ui->noteTextEdit->font();
+    int currentSize = font.pointSize();
+    if (currentSize > 8) {
+        font.setPointSize(currentSize - 1);
+        ui->noteTextEdit->setFont(font);
+        saveNote();
+    }
+}
+
+void NoteWidget::resetFontSize() {
+    setTextEditFontSize(11);  // Reset to 11px
+    saveNote();
 }

@@ -42,12 +42,17 @@ private:
     void updateCursorShape(const QPoint &pos);
     bool isResizing = false;
     Qt::Edges resizeDirection = Qt::Edges();
+    void setTextEditFontSize(int fontSize);
+    void increaseFontSize();
+    void decreaseFontSize();
+    void resetFontSize();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
     void createNewNoteFile();
     void loadNoteFromFile();
