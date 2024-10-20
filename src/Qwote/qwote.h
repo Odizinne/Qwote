@@ -20,6 +20,7 @@ private slots:
     void onStartupActionStateChanged();
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void onSettingsPageClosed();
+    void quitQwote();
 
 private:
     void createTrayIcon();

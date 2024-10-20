@@ -23,6 +23,7 @@ public:
     void setNoteTitle(const QString &title);
     void setNoteContent(const QString &content);
     void deleteNote();
+    void closeNote();
     void createNewNote();
     void savePosition();
     void restorePosition(const QPoint &position);
@@ -53,6 +54,7 @@ private:
     void resetFontSize();
     QJsonObject settings;
     static const QString settingsFile;
+    bool ctrlPressed;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -60,10 +62,14 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
     void createNewNoteFile();
     void loadNoteFromFile();
     void saveNote();
+
+signals:
+    void closed();
 };
 
 #endif // NOTEWIDGET_H

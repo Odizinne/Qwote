@@ -29,7 +29,8 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     isDragging(false),
     filePath(filePath),
     isRestored(restored),
-    isPinned(false)
+    isPinned(false),
+    ctrlPressed(false)
 {
     ui->setupUi(this);
     setWindowTitle("New note");
@@ -222,18 +223,32 @@ void NoteWidget::deleteNote() {
             QFile::remove(filePath);
         }
         existingNotes.removeAll(this);
+        emit closed();
         this->deleteLater(); // Safely delete the widget
     });
 
     animation->start(); // Start the fade-out animation
 }
 
+void NoteWidget::closeNote() {
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(250);
+    animation->setStartValue(1);
+    animation->setEndValue(0);
+
+    connect(animation, &QPropertyAnimation::finished, this, [this, animation]() {
+        animation->deleteLater();
+        existingNotes.removeAll(this);
+        emit closed();
+        this->deleteLater();
+    });
+
+    animation->start();
+}
 
 void NoteWidget::createNewNote() {
-    //NoteWidget *newNote = new NoteWidget();
-    //new NoteWidget();
     if (qwoteInstance) {
-        qwoteInstance->createNewNote(); // Call Qwote's createNewNote
+        qwoteInstance->createNewNote();
     }
 }
 
@@ -395,23 +410,34 @@ void NoteWidget::updateCursorShape(const QPoint &pos) {
         setCursor(Qt::ArrowCursor);
     }
 
-    resizeDirection = detectedEdges; // Store the current edge for resizing
+    resizeDirection = detectedEdges;
 }
 
 void NoteWidget::keyPressEvent(QKeyEvent *event) {
-    if (event->modifiers() & Qt::ControlModifier) {
-        QString text = event->text();  // Get the actual text representation
-
-        if (text == "+" || text == "=") {
-            increaseFontSize();  // Ctrl + or Ctrl =
-        } else if (text == "-") {
-            decreaseFontSize();  // Ctrl -
-        } else if (text == "0") {
-            resetFontSize();  // Ctrl 0
+    if (event->key() == Qt::Key_Control) {
+        ctrlPressed = true;
+    } else {
+        QString text = event->text();
+        if (ctrlPressed) {
+            if (text == "+" || text == "=") {
+                increaseFontSize();
+            } else if (text == "-") {
+                decreaseFontSize();
+            } else if (text == "0") {
+                resetFontSize();
+            }
         }
     }
 
     QWidget::keyPressEvent(event);
+}
+
+void NoteWidget::keyReleaseEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Control) {
+        ctrlPressed = false;
+    }
+
+    QWidget::keyReleaseEvent(event);
 }
 
 void NoteWidget::increaseFontSize() {

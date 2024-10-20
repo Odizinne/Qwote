@@ -53,7 +53,7 @@ void Qwote::createTrayIcon()
     trayMenu->addAction(deleteAllAction);
 
     QAction *exitAction = new QAction("Exit", this);
-    connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);
+    connect(exitAction, &QAction::triggered, this, &Qwote::quitQwote);
     trayMenu->addAction(exitAction);
 
     trayIcon->setContextMenu(trayMenu);
@@ -136,4 +136,24 @@ void Qwote::deleteAllNotes() {
         noteWidget->deleteNote();
     }
     noteWidgets.clear();
+}
+
+void Qwote::quitQwote()
+{
+    QEventLoop loop;
+    QList<NoteWidget*> notesToClose = noteWidgets;
+
+    for (NoteWidget *noteWidget : notesToClose) {
+        connect(noteWidget, &NoteWidget::closed, this, [this, &loop, noteWidget]() {
+            noteWidgets.removeOne(noteWidget);
+            if (noteWidgets.isEmpty()) {
+                loop.quit();
+            }
+        });
+        noteWidget->closeNote();
+    }
+
+    loop.exec();
+    noteWidgets.clear();
+    qApp->quit();
 }
