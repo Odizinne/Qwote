@@ -1,4 +1,5 @@
 #include "notewidget.h"
+#include "qwote.h"
 #include "ui_notewidget.h"
 #include "utils.h"
 #include <QMouseEvent>
@@ -21,8 +22,9 @@ const QString NoteWidget::settingsFile = QStandardPaths::writableLocation(
 
 QList<NoteWidget*> NoteWidget::existingNotes;
 
-NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
+NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, Qwote *qwoteInstance)
     : QWidget(parent),
+    qwoteInstance(qwoteInstance),
     ui(new Ui::NoteWidget),
     isDragging(false),
     filePath(filePath),
@@ -229,7 +231,10 @@ void NoteWidget::deleteNote() {
 
 void NoteWidget::createNewNote() {
     //NoteWidget *newNote = new NoteWidget();
-    new NoteWidget();
+    //new NoteWidget();
+    if (qwoteInstance) {
+        qwoteInstance->createNewNote(); // Call Qwote's createNewNote
+    }
 }
 
 void NoteWidget::savePosition() {
@@ -434,6 +439,10 @@ void NoteWidget::resetFontSize() {
 
 void NoteWidget::loadSettings()
 {
+    QFont currentFont = ui->noteTextEdit->font();
+    int currentSize = currentFont.pointSize();
+    int titleSize = 11;
+
     QDir settingsDir(QFileInfo(settingsFile).absolutePath());
     if (!settingsDir.exists()) {
         settingsDir.mkpath(settingsDir.absolutePath());
@@ -443,7 +452,9 @@ void NoteWidget::loadSettings()
     if (!file.exists()) {
         QFont defaultFont;
         defaultFont.setFamily("Consolas");
+        defaultFont.setPointSize(11);
         ui->noteTextEdit->setFont(defaultFont);
+        defaultFont.setBold(true);
         ui->noteTitleLineEdit->setFont(defaultFont);
 
     } else {
@@ -454,7 +465,10 @@ void NoteWidget::loadSettings()
                 settings = doc.object();
                 QFont userFont;
                 userFont.setFamily(settings.value("font").toString());
+                userFont.setPointSize(currentSize);
                 ui->noteTextEdit->setFont(userFont);
+                userFont.setPointSize(titleSize);
+                userFont.setBold(true);
                 ui->noteTitleLineEdit->setFont(userFont);
             }
             file.close();

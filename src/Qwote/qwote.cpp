@@ -67,7 +67,8 @@ void Qwote::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 
 void Qwote::createNewNote() {
-    NoteWidget *newNote = new NoteWidget(nullptr, QString(), false); // No parent
+    qDebug() << "pass";
+    NoteWidget *newNote = new NoteWidget(nullptr, QString(), false, this); // Pass the Qwote instance
     noteWidgets.append(newNote);
 
     if (settingsPage) {
@@ -93,7 +94,7 @@ bool Qwote::restoreSavedNotes() {
         QString filePath = appDataLocation + "/" + noteFile;
 
         // Create a new NoteWidget and populate it with the data
-        NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true); // Pass file path for restored notes
+        NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true, this); // Pass file path for restored notes
         noteWidgets.append(noteWidget);
     }
 
