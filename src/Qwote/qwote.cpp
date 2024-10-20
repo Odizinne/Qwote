@@ -57,7 +57,7 @@ void Qwote::createTrayIcon()
     trayMenu->addAction(exitAction);
 
     trayIcon->setContextMenu(trayMenu);
-    trayIcon->setToolTip("QMS");
+    trayIcon->setToolTip("Qwote");
     trayIcon->show();
 
     connect(trayIcon, &QSystemTrayIcon::activated, this, &Qwote::trayIconActivated);
