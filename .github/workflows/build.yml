@@ -23,7 +23,7 @@ jobs:
         with:
           version: '6.8.0'
           add-tools-to-path: true
-          cache: true
+          #cache: true
 
       - name: Install jom
         id: jom-setup
