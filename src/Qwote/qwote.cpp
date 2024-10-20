@@ -48,6 +48,10 @@ void Qwote::createTrayIcon()
 
     trayMenu->addSeparator();
 
+    QAction *deleteAllAction = new QAction("Delete all notes", this);
+    connect(deleteAllAction, &QAction::triggered, this, &Qwote::deleteAllNotes);
+    trayMenu->addAction(deleteAllAction);
+
     QAction *exitAction = new QAction("Exit", this);
     connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);
     trayMenu->addAction(exitAction);
@@ -126,4 +130,11 @@ void Qwote::showSettings()
 void Qwote::onSettingsPageClosed()
 {
     settingsPage = nullptr;
+}
+
+void Qwote::deleteAllNotes() {
+    for (NoteWidget *noteWidget : noteWidgets) {
+        noteWidget->deleteNote();
+    }
+    noteWidgets.clear();
 }

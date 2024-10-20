@@ -29,6 +29,7 @@ private:
     QList<NoteWidget*> noteWidgets;  // This can use the forward declaration
     SettingsPage* settingsPage;
     void showSettings();
+    void deleteAllNotes();
 
 signals:
 };
