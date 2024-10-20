@@ -13,9 +13,11 @@ INCLUDEPATH += \
     src/NoteWidget/ \
     src/Qwote/ \
     src/ShortcutManager/ \
-    src/Utils/
+    src/Utils/ \
+    src/SettingsPage/
 
 SOURCES += \
+    src/SettingsPage/settingspage.cpp \
     src/main.cpp \
     src/NoteWidget/notewidget.cpp \
     src/Qwote/qwote.cpp \
@@ -25,11 +27,13 @@ SOURCES += \
 HEADERS += \
     src/NoteWidget/notewidget.h \
     src/Qwote/qwote.h \
+    src/SettingsPage/settingspage.h \
     src/ShortcutManager/shortcutmanager.h \
     src/Utils/utils.h
 
 FORMS += \
-    src/NoteWidget/notewidget.ui
+    src/NoteWidget/notewidget.ui \
+    src/SettingsPage/settingspage.ui
 
 RESOURCES += \
     src/Resources/resources.qrc \

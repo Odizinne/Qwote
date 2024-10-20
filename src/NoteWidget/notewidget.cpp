@@ -11,9 +11,14 @@
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QRandomGenerator>
+#include <QFont>
 
 using namespace Utils;
 const int resizeMargin = 7;
+const QString NoteWidget::settingsFile = QStandardPaths::writableLocation(
+                                               QStandardPaths::AppDataLocation)
+                                           + "/Qwote/settings.json";
+
 QList<NoteWidget*> NoteWidget::existingNotes;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
@@ -31,6 +36,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored)
     setMouseTracking(true);
 
     setTitleColor();
+    loadSettings();
 
     ui->newButton->setIcon(getIcon(1, false));
     ui->pinButton->setIcon(getIcon(2, false));
@@ -422,6 +428,36 @@ void NoteWidget::decreaseFontSize() {
 }
 
 void NoteWidget::resetFontSize() {
-    setTextEditFontSize(11);  // Reset to 11px
+    setTextEditFontSize(11);
     saveNote();
+}
+
+void NoteWidget::loadSettings()
+{
+    QDir settingsDir(QFileInfo(settingsFile).absolutePath());
+    if (!settingsDir.exists()) {
+        settingsDir.mkpath(settingsDir.absolutePath());
+    }
+
+    QFile file(settingsFile);
+    if (!file.exists()) {
+        QFont defaultFont;
+        defaultFont.setFamily("Consolas");
+        ui->noteTextEdit->setFont(defaultFont);
+        ui->noteTitleLineEdit->setFont(defaultFont);
+
+    } else {
+        if (file.open(QIODevice::ReadOnly)) {
+            QJsonParseError parseError;
+            QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
+            if (parseError.error == QJsonParseError::NoError) {
+                settings = doc.object();
+                QFont userFont;
+                userFont.setFamily(settings.value("font").toString());
+                ui->noteTextEdit->setFont(userFont);
+                ui->noteTitleLineEdit->setFont(userFont);
+            }
+            file.close();
+        }
+    }
 }

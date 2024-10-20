@@ -14,6 +14,7 @@ using namespace ShortcutManager;
 Qwote::Qwote(QWidget *parent)
     : QWidget{parent}
     , trayIcon(new QSystemTrayIcon(this))
+    , settingsPage(nullptr)
 {
     createTrayIcon();
     if (!restoreSavedNotes()) {
@@ -41,6 +42,10 @@ void Qwote::createTrayIcon()
     connect(startupAction, &QAction::triggered, this, &Qwote::onStartupActionStateChanged);
     trayMenu->addAction(startupAction);
 
+    QAction *settingsAction = new QAction("Settings", this);
+    connect(settingsAction, &QAction::triggered, this, &Qwote::showSettings);
+    trayMenu->addAction(settingsAction);
+
     trayMenu->addSeparator();
 
     QAction *exitAction = new QAction("Exit", this);
@@ -64,6 +69,10 @@ void Qwote::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void Qwote::createNewNote() {
     NoteWidget *newNote = new NoteWidget(nullptr, QString(), false); // No parent
     noteWidgets.append(newNote);
+
+    if (settingsPage) {
+        connect(settingsPage, &SettingsPage::fontChanged, newNote, &NoteWidget::loadSettings);
+    }
 }
 
 bool Qwote::restoreSavedNotes() {
@@ -93,4 +102,27 @@ bool Qwote::restoreSavedNotes() {
 
 void Qwote::onStartupActionStateChanged() {
     manageShortcut(startupAction->isChecked());
+}
+
+void Qwote::showSettings()
+{
+    if (settingsPage) {
+        settingsPage->showNormal();
+        settingsPage->raise();
+        settingsPage->activateWindow();
+        return;
+    }
+
+    settingsPage = new SettingsPage;
+    settingsPage->setAttribute(Qt::WA_DeleteOnClose);
+    connect(settingsPage, &SettingsPage::closed, this, &Qwote::onSettingsPageClosed);
+    for (NoteWidget *noteWidget : noteWidgets) {
+        connect(settingsPage, &SettingsPage::fontChanged, noteWidget, &NoteWidget::loadSettings);
+    }
+    settingsPage->show();
+}
+
+void Qwote::onSettingsPageClosed()
+{
+    settingsPage = nullptr;
 }

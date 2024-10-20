@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include <QPoint>
+#include <QJsonObject>
 
 namespace Ui {
 class NoteWidget;
@@ -24,6 +25,7 @@ public:
     void savePosition();
     void restorePosition(const QPoint &position);
     static QList<NoteWidget*> existingNotes;
+    void loadSettings();
 
 private slots:
     void togglePinnedState();
@@ -46,6 +48,9 @@ private:
     void increaseFontSize();
     void decreaseFontSize();
     void resetFontSize();
+
+    QJsonObject settings;
+    static const QString settingsFile;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
