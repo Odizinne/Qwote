@@ -415,7 +415,7 @@ void NoteWidget::keyPressEvent(QKeyEvent *event) {
 void NoteWidget::increaseFontSize() {
     QFont font = ui->noteTextEdit->font();
     int currentSize = font.pointSize();
-    if (currentSize < 14) {
+    if (currentSize < 16) {
         font.setPointSize(currentSize + 1);
         ui->noteTextEdit->setFont(font);
         saveNote();
