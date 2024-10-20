@@ -314,7 +314,7 @@ void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
     } else if (isResizing) {
         // Handle window resizing
         QRect currentGeometry = this->geometry();
-        QPoint globalMousePos = event->globalPos();
+        QPoint globalMousePos = event->globalPosition().toPoint();  // Updated here
 
         if (resizeDirection & Qt::LeftEdge) {
             int newX = globalMousePos.x();

@@ -109,24 +109,3 @@ QIcon Utils::getIcon(int icon, bool pinned) {
 
     return QIcon(recoloredIcon);
 }
-
-int getBuildNumber()
-{
-    HKEY hKey;
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                 TEXT("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"),
-                 0, KEY_READ, &hKey);
-
-    char buildNumberString[256];
-    DWORD bufferSize = sizeof(buildNumberString);
-    RegQueryValueEx(hKey, TEXT("CurrentBuild"), NULL, NULL, (LPBYTE)buildNumberString, &bufferSize);
-    RegCloseKey(hKey);
-
-    return std::stoi(buildNumberString);
-}
-
-bool Utils::isWindows10()
-{
-    int buildNumber = getBuildNumber();
-    return (buildNumber >= 10240 && buildNumber < 22000);
-}
