@@ -23,13 +23,13 @@ Notes closed with delete button will not be saved / reloaded across app restart.
 
 You can use keyboard shortcuts to adjust font size.
 
-- `ctrl` + `+`, `ctrl` + `=`  
+- `ctrl` + `MouseWheelUp`  
 Adjust size up (max 16px)
 
-- `ctrl` + `-`  
+- `ctrl` + `MouseWheelDown`  
 Adjust size down (min 8px)
 
-- `ctrl` + `0`  
+- `ctrl` + `MouseMiddleButtonClick`  
 Reset to default size (11px)
 
 ## Installation

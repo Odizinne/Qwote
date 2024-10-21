@@ -309,6 +309,10 @@ void NoteWidget::setTitleColor() {
 }
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
+    if (ctrlPressed && event->button() == Qt::MiddleButton) {
+        // Ctrl + Middle Mouse Button -> reset font size
+        resetFontSize();
+    }
     if (event->button() == Qt::LeftButton) {
         if (resizeDirection != Qt::Edges()) {
             isResizing = true;
@@ -416,19 +420,7 @@ void NoteWidget::updateCursorShape(const QPoint &pos) {
 void NoteWidget::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Control) {
         ctrlPressed = true;
-    } else {
-        QString text = event->text();
-        if (ctrlPressed) {
-            if (text == "+" || text == "=") {
-                increaseFontSize();
-            } else if (text == "-") {
-                decreaseFontSize();
-            } else if (text == "0") {
-                resetFontSize();
-            }
-        }
     }
-
     QWidget::keyPressEvent(event);
 }
 
@@ -436,8 +428,25 @@ void NoteWidget::keyReleaseEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Control) {
         ctrlPressed = false;
     }
-
     QWidget::keyReleaseEvent(event);
+}
+
+void NoteWidget::wheelEvent(QWheelEvent *event) {
+    if (ctrlPressed) {
+        if (event->angleDelta().y() > 0) {
+            // Wheel up -> increase font size
+            increaseFontSize();
+        } else if (event->angleDelta().y() < 0) {
+            // Wheel down -> decrease font size
+            decreaseFontSize();
+        } else if (event->buttons() & Qt::MiddleButton) {
+            // Middle mouse button pressed -> reset font size
+            resetFontSize();
+        }
+    } else {
+        // Handle normal wheel event
+        QWidget::wheelEvent(event);
+    }
 }
 
 void NoteWidget::increaseFontSize() {
