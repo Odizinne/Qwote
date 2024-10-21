@@ -8,24 +8,25 @@ INCLUDEPATH +=                                  \
     src/                                        \
     src/NoteWidget/                             \
     src/Qwote/                                  \
+    src/QwoteServer/                            \
+    src/SettingsPage/                           \
     src/ShortcutManager/                        \
     src/Utils/                                  \
-    src/SettingsPage/                           \
-    src/QwoteServer/
+
 
 SOURCES +=                                      \
-    src/QwoteServer/qwoteserver.cpp \
-    src/SettingsPage/settingspage.cpp           \
     src/main.cpp                                \
     src/NoteWidget/notewidget.cpp               \
     src/Qwote/qwote.cpp                         \
+    src/QwoteServer/qwoteserver.cpp             \
+    src/SettingsPage/settingspage.cpp           \
     src/ShortcutManager/shortcutmanager.cpp     \
     src/Utils/utils.cpp                         \
 
 HEADERS +=                                      \
     src/NoteWidget/notewidget.h                 \
     src/Qwote/qwote.h                           \
-    src/QwoteServer/qwoteserver.h \
+    src/QwoteServer/qwoteserver.h               \
     src/SettingsPage/settingspage.h             \
     src/ShortcutManager/shortcutmanager.h       \
     src/Utils/utils.h                           \

@@ -3,7 +3,7 @@
 
 #include <QLocalServer>
 #include <QLocalSocket>
-#include "qwote.h"  // Assuming Qwote is defined in qwote.h
+#include "qwote.h"
 
 class QwoteServer : public QObject {
     Q_OBJECT
@@ -18,7 +18,7 @@ private slots:
 
 private:
     QLocalServer *server;
-    Qwote qwote; // Your Qwote instance
+    Qwote qwote;
 };
 
 #endif // QWOTESERVER_H

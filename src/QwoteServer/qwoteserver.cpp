@@ -5,7 +5,7 @@ QwoteServer::QwoteServer(QObject *parent)
 
 bool QwoteServer::startServer(const QString &serverName) {
     if (!server->listen(serverName)) {
-        return false; // Failed to create the local server
+        return false;
     }
 
     connect(server, &QLocalServer::newConnection, this, &QwoteServer::handleNewConnection);
@@ -29,5 +29,5 @@ void QwoteServer::handleClientData() {
     }
 
     clientConnection->disconnectFromServer();
-    clientConnection->deleteLater(); // Clean up the connection
+    clientConnection->deleteLater();
 }
