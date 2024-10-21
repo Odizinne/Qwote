@@ -1,34 +1,33 @@
-#include "QwoteServer.h"
+#include "qwoteserver.h"
 
-QwoteServer::QwoteServer(Qwote *qwote, QObject *parent)
-    : QObject(parent), qwote(qwote) {
-    if (!server.listen("QwoteServer")) {
-        throw std::runtime_error("Failed to start QwoteServer");
+QwoteServer::QwoteServer(QObject *parent)
+    : QObject(parent), server(new QLocalServer(this)) {}
+
+bool QwoteServer::startServer(const QString &serverName) {
+    if (!server->listen(serverName)) {
+        return false; // Failed to create the local server
     }
 
-    connect(&server, &QLocalServer::newConnection, this, &QwoteServer::onNewConnection);
+    connect(server, &QLocalServer::newConnection, this, &QwoteServer::handleNewConnection);
+    return true;
 }
 
-void QwoteServer::onNewConnection() {
-    QLocalSocket *clientConnection = server.nextPendingConnection();
+void QwoteServer::handleNewConnection() {
+    QLocalSocket *clientConnection = server->nextPendingConnection();
 
-    connect(clientConnection, &QLocalSocket::readyRead, this, &QwoteServer::onReadyRead);
+    connect(clientConnection, &QLocalSocket::readyRead, this, &QwoteServer::handleClientData);
 }
 
-void QwoteServer::onReadyRead() {
-    QLocalSocket *clientConnection = qobject_cast<QLocalSocket*>(sender());
-    if (!clientConnection) {
-        return;
-    }
-
+void QwoteServer::handleClientData() {
+    QLocalSocket *clientConnection = qobject_cast<QLocalSocket *>(sender());
     QDataStream in(clientConnection);
     QString command;
     in >> command;
 
     if (command == "createNewNote") {
-        qwote->createNewNote();
+        qwote.createNewNote();
     }
 
     clientConnection->disconnectFromServer();
-    clientConnection->deleteLater(); // Safely delete the connection
+    clientConnection->deleteLater(); // Clean up the connection
 }
