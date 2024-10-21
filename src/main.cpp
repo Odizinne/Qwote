@@ -1,68 +1,54 @@
 #include <qwote.h>
 #include <QApplication>
 #include <QSharedMemory>
-#include <QLocalServer>
-#include <QLocalSocket>
-#include <QDataStream>
-
-const QString SERVER_NAME = "QwoteServer";
+#include <QDebug>
+#include "QwoteServer.h"
 
 int main(int argc, char *argv[]) {
+    qDebug() << "Starting application";
     QSharedMemory sharedMemory("QwoteID");
 
+    // Check if another instance is running
     if (sharedMemory.attach()) {
-        // If the shared memory is already attached, try to connect to the existing instance
+        qDebug() << "Attempting to connect to existing instance";
         QLocalSocket socket;
-        socket.connectToServer(SERVER_NAME);
+        socket.connectToServer("QwoteServer");
 
-        if (socket.waitForConnected()) {
-            // Send a command to create a new note
+        // Check if the connection was successful
+        if (socket.waitForConnected(3000)) { // Wait for 3 seconds for connection
             QByteArray block;
             QDataStream out(&block, QIODevice::WriteOnly);
             out << QString("createNewNote");
+            qDebug() << "Sending request to create a new note";
             socket.write(block);
             socket.flush();
             socket.waitForBytesWritten();
             socket.disconnectFromServer();
+            qDebug() << "Request sent successfully";
+        } else {
+            qDebug() << "Failed to connect to server:" << socket.errorString();
         }
-        return 0; // Exit the second instance
+        return 0; // Exit if another instance is running
     }
 
+    // Create shared memory to ensure single instance
     if (!sharedMemory.create(1)) {
-        return 1; // Failed to create shared memory
+        qDebug() << "Failed to create shared memory:" << sharedMemory.errorString();
+        return 1;
     }
 
     QApplication app(argc, argv);
     app.setStyle("fusion");
     app.setQuitOnLastWindowClosed(false);
 
-    // Create a local server to listen for incoming connections
-    QLocalServer server;
-    if (!server.listen(SERVER_NAME)) {
-        return 1; // Failed to create the local server
-    }
-
-    // Create the Qwote instance
     Qwote qwote;
 
-    // Handle incoming connections in the main event loop
-    QObject::connect(&server, &QLocalServer::newConnection, [&qwote, &server]() {
-        QLocalSocket *clientConnection = server.nextPendingConnection();
+    try {
+        QwoteServer server(&qwote);
+    } catch (const std::runtime_error &e) {
+        qDebug() << "Failed to start QwoteServer:" << e.what();
+        return 1;
+    }
 
-        // Handle the data from the client
-        QObject::connect(clientConnection, &QLocalSocket::readyRead, [clientConnection, &qwote]() {
-            QDataStream in(clientConnection);
-            QString command;
-            in >> command;
-
-            if (command == "createNewNote") {
-                // Call the createNewNote function of the first instance
-                qwote.createNewNote();
-            }
-
-            clientConnection->disconnectFromServer();
-        });
-    });
-
-    return app.exec();
+    return app.exec(); // Start the application event loop
 }

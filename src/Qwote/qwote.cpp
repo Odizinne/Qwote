@@ -83,21 +83,18 @@ bool Qwote::restoreSavedNotes() {
     QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir(appDataLocation);
     if (!dir.exists()) {
-        return false; // No notes directory exists
+        return false;
     }
 
-    // List all JSON files following the pattern "note-*.json"
     QStringList noteFiles = dir.entryList(QStringList() << "note-*.json", QDir::Files);
     if (noteFiles.isEmpty()) {
-        return false; // No note files found
+        return false;
     }
 
-    // Iterate through each note file
     foreach (const QString &noteFile, noteFiles) {
         QString filePath = appDataLocation + "/" + noteFile;
 
-        // Create a new NoteWidget and populate it with the data
-        NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true, this); // Pass file path for restored notes
+        NoteWidget *noteWidget = new NoteWidget(nullptr, filePath, true, this);
         noteWidgets.append(noteWidget);
     }
 
@@ -140,20 +137,15 @@ void Qwote::deleteAllNotes() {
 
 void Qwote::quitQwote()
 {
-    QEventLoop loop;
-    QList<NoteWidget*> notesToClose = noteWidgets;
-
-    for (NoteWidget *noteWidget : notesToClose) {
-        connect(noteWidget, &NoteWidget::closed, this, [this, &loop, noteWidget]() {
-            noteWidgets.removeOne(noteWidget);
-            if (noteWidgets.isEmpty()) {
-                loop.quit();
-            }
-        });
-        noteWidget->closeNote();
+    for (NoteWidget *noteWidget : noteWidgets) {
+        disconnect(noteWidget, nullptr, this, nullptr);
+        noteWidget->deleteLater();
     }
-
-    loop.exec();
     noteWidgets.clear();
-    qApp->quit();
+    QApplication::quit();
+}
+
+void Qwote::onNoteDeleted(NoteWidget *noteWidget) {
+    // Remove the deleted NoteWidget from the list
+    noteWidgets.removeAll(noteWidget);
 }

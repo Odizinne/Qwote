@@ -4,9 +4,8 @@
 #include <QWidget>
 #include <QSystemTrayIcon>
 #include "settingspage.h"
-// Remove the direct include of notewidget.h
-class NoteWidget;  // Forward declaration
-class SettingsPage;  // Forward declaration if needed
+
+class NoteWidget;
 
 class Qwote : public QWidget
 {
@@ -15,6 +14,7 @@ public:
     explicit Qwote(QWidget *parent = nullptr);
     ~Qwote();
     void createNewNote();
+    void onNoteDeleted(NoteWidget *noteWidget);
 
 private slots:
     void onStartupActionStateChanged();
@@ -27,12 +27,11 @@ private:
     QSystemTrayIcon *trayIcon;
     QAction *startupAction;
     bool restoreSavedNotes();
-    QList<NoteWidget*> noteWidgets;  // This can use the forward declaration
+    QList<NoteWidget*> noteWidgets;
     SettingsPage* settingsPage;
     void showSettings();
     void deleteAllNotes();
 
-signals:
 };
 
 #endif // QWOTE_H
