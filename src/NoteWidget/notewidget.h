@@ -6,10 +6,10 @@
 #include <QPoint>
 #include <QJsonObject>
 
-class Qwote;  // Forward declaration
+class Qwote;
 
 namespace Ui {
-class NoteWidget;  // Forward declare the UI class
+class NoteWidget;
 }
 
 class NoteWidget : public QWidget {
@@ -19,11 +19,9 @@ public:
     explicit NoteWidget(QWidget *parent, const QString &filePath, bool restored, Qwote *qwoteInstance = nullptr);
     ~NoteWidget();
 
-    // Method declarations...
     void setNoteTitle(const QString &title);
     void setNoteContent(const QString &content);
     void deleteNote();
-    void closeNote();
     void createNewNote();
     void savePosition();
     void restorePosition(const QPoint &position);
@@ -35,14 +33,14 @@ private slots:
     void onNoteTitleChanged();
 
 private:
-    Qwote* qwoteInstance;  // Pointer to Qwote
+    Qwote* qwoteInstance;
     Ui::NoteWidget *ui;
     bool isDragging;
     QString filePath;
     bool isRestored;
     QPoint dragStartPosition;
     bool isPinned;
-    void setTitleColor();
+    void setTitle();
     void placeNote();
     void fadeIn();
     void updateCursorShape(const QPoint &pos);

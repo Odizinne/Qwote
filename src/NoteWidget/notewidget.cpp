@@ -23,14 +23,14 @@ const QString NoteWidget::settingsFile = QStandardPaths::writableLocation(
 QList<NoteWidget*> NoteWidget::existingNotes;
 
 NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, Qwote *qwoteInstance)
-    : QWidget(parent),
-    qwoteInstance(qwoteInstance),
-    ui(new Ui::NoteWidget),
-    isDragging(false),
-    filePath(filePath),
-    isRestored(restored),
-    isPinned(false),
-    ctrlPressed(false)
+    : QWidget(parent)
+    , qwoteInstance(qwoteInstance)
+    , ui(new Ui::NoteWidget)
+    , isDragging(false)
+    , filePath(filePath)
+    , isRestored(restored)
+    , isPinned(false)
+    , ctrlPressed(false)
 {
     ui->setupUi(this);
     setWindowTitle("New note");
@@ -38,7 +38,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setMouseTracking(true);
 
-    setTitleColor();
+    setTitle();
     loadSettings();
 
     ui->newButton->setIcon(getIcon(1, false));
@@ -61,13 +61,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::saveNote);
     connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::onNoteTitleChanged);
 
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(250);
-    animation->setStartValue(0);
-    animation->setEndValue(1);
-    setWindowOpacity(0);
-    show();
-    animation->start();
+    fadeIn();
 }
 
 NoteWidget::~NoteWidget() {
@@ -84,32 +78,26 @@ void NoteWidget::togglePinnedState() {
 
 void NoteWidget::placeNote() {
     QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+    int posX = screenGeometry.right() - this->width() - 20;
+    int posY = 20;
 
-    // Calculate the desired position (20px from the top and right)
-    int posX = screenGeometry.right() - this->width() - 20; // Right border minus width and margin
-    int posY = 20; // 20 pixels from the top
-
-    // Check for overlap with existing notes
     QRect newNoteRect(posX, posY, this->width(), this->height());
-    const int offset = 20; // Margin for avoiding overlap
+    const int offset = 20;
 
-    // Adjust position if overlapping
     for (NoteWidget *existingNote : existingNotes) {
         QRect existingNoteRect = existingNote->geometry();
         if (newNoteRect.intersects(existingNoteRect)) {
-            // If overlap is detected, adjust the position
-            posY += existingNoteRect.height() + offset; // Move down by the height of the existing note + offset
-            newNoteRect.moveTo(posX, posY); // Update the new rectangle with the new position
-            // Reset posY to top if it exceeds the screen height
+            posY += existingNoteRect.height() + offset;
+            newNoteRect.moveTo(posX, posY);
             if (posY + this->height() > screenGeometry.bottom()) {
-                posY = 20; // Reset to top
+                posY = 20;
             }
         }
     }
 
-    // Move the new note to the calculated position
     this->move(newNoteRect.topLeft());
 }
+
 void NoteWidget::createNewNoteFile() {
     QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -211,26 +199,9 @@ void NoteWidget::setNoteContent(const QString &content) {
 }
 
 void NoteWidget::deleteNote() {
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-    animation->setDuration(250);
-    animation->setStartValue(1);
-    animation->setEndValue(0);
-
-    connect(animation, &QPropertyAnimation::finished, this, [this, animation]() {
-        // Cleanup the animation
-        animation->deleteLater(); // Prevent memory leak
-        if (!filePath.isEmpty()) {
-            QFile::remove(filePath);
-        }
-        existingNotes.removeAll(this);
-        emit closed();
-        this->deleteLater(); // Safely delete the widget
+    connect(this, &NoteWidget::closed, qwoteInstance, [this]() {
+        qwoteInstance->onNoteDeleted(this);
     });
-
-    animation->start(); // Start the fade-out animation
-}
-
-void NoteWidget::closeNote() {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
     animation->setDuration(250);
     animation->setStartValue(1);
@@ -238,6 +209,9 @@ void NoteWidget::closeNote() {
 
     connect(animation, &QPropertyAnimation::finished, this, [this, animation]() {
         animation->deleteLater();
+        if (!filePath.isEmpty()) {
+            QFile::remove(filePath);
+        }
         existingNotes.removeAll(this);
         emit closed();
         this->deleteLater();
@@ -279,7 +253,7 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     painter.drawRoundedRect(rect(), 8, 8);
 }
 
-void NoteWidget::setTitleColor() {
+void NoteWidget::setTitle() {
     QStringList placeholders = {
         "shopping list",
         "Give it a name",
@@ -310,13 +284,12 @@ void NoteWidget::setTitleColor() {
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
     if (ctrlPressed && event->button() == Qt::MiddleButton) {
-        // Ctrl + Middle Mouse Button -> reset font size
         resetFontSize();
     }
     if (event->button() == Qt::LeftButton) {
         if (resizeDirection != Qt::Edges()) {
             isResizing = true;
-            this->grabMouse(); // Capture the mouse for resizing
+            this->grabMouse();
         } else {
             isDragging = true;
             dragStartPosition = event->pos();
@@ -327,11 +300,9 @@ void NoteWidget::mousePressEvent(QMouseEvent *event) {
 
 void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
-        // Handle window dragging
         QPoint newPos = this->pos() + (event->pos() - dragStartPosition);
         this->move(newPos);
     } else if (isResizing) {
-        // Handle window resizing
         QRect currentGeometry = this->geometry();
         QPoint globalMousePos = event->globalPosition().toPoint();  // Updated here
 
@@ -362,7 +333,6 @@ void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
 
         this->setGeometry(currentGeometry);
     } else {
-        // Check if the cursor is near the edges for resizing
         updateCursorShape(event->pos());
     }
 }
@@ -371,7 +341,7 @@ void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
         isResizing = false;
-        this->releaseMouse(); // Release mouse capture when resizing is done
+        this->releaseMouse();
         savePosition();
     }
 }
@@ -401,7 +371,6 @@ void NoteWidget::updateCursorShape(const QPoint &pos) {
         detectedEdges |= Qt::BottomEdge;
     }
 
-    // Set appropriate cursor based on detected edges
     if (detectedEdges == (Qt::LeftEdge | Qt::TopEdge) || detectedEdges == (Qt::RightEdge | Qt::BottomEdge)) {
         setCursor(Qt::SizeFDiagCursor);
     } else if (detectedEdges == (Qt::RightEdge | Qt::TopEdge) || detectedEdges == (Qt::LeftEdge | Qt::BottomEdge)) {
@@ -434,17 +403,13 @@ void NoteWidget::keyReleaseEvent(QKeyEvent *event) {
 void NoteWidget::wheelEvent(QWheelEvent *event) {
     if (ctrlPressed) {
         if (event->angleDelta().y() > 0) {
-            // Wheel up -> increase font size
             increaseFontSize();
         } else if (event->angleDelta().y() < 0) {
-            // Wheel down -> decrease font size
             decreaseFontSize();
         } else if (event->buttons() & Qt::MiddleButton) {
-            // Middle mouse button pressed -> reset font size
             resetFontSize();
         }
     } else {
-        // Handle normal wheel event
         QWidget::wheelEvent(event);
     }
 }
