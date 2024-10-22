@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QProcess>
 #include <QRandomGenerator>
+#include <QPalette>
+#include <QApplication>
 
 #ifdef _WIN32
 #include <windows.h>
