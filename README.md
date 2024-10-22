@@ -34,11 +34,13 @@ Reset to default size (11px)
 
 ## Installation
 
-### Manual
+### Windows 
+
+#### Manual
 
 Download latest release, extract it, and run `Qwote.exe`.
 
-### Using OdizinnePackageManager
+#### Using OdizinnePackageManager
 
 - Install OPM
 ```
@@ -52,6 +54,10 @@ opm install qwote
 ```
 
 Qwote will be available in your start menu.
+
+### Linux
+
+Download latest precompiled binary in release section.
 
 ## Credits
 
