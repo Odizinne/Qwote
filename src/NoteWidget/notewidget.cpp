@@ -427,6 +427,12 @@ void NoteWidget::resetFontSize() {
 
 void NoteWidget::loadSettings()
 {
+    QString defaultFontFamily;
+#ifdef _WIN32
+    defaultFontFamily = "Consolas";
+#elif __linux__
+    defaultFontFamily = "Monospace";
+#endif
     QFont currentFont = ui->noteTextEdit->font();
     int currentSize = currentFont.pointSize();
     int titleSize = 11;
@@ -439,7 +445,7 @@ void NoteWidget::loadSettings()
     QFile file(settingsFile);
     if (!file.exists()) {
         QFont defaultFont;
-        defaultFont.setFamily("Consolas");
+        defaultFont.setFamily(defaultFontFamily);
         defaultFont.setPointSize(11);
         ui->noteTextEdit->setFont(defaultFont);
         defaultFont.setBold(true);

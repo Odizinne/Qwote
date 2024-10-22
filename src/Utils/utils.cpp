@@ -27,9 +27,9 @@ QString Utils::getTheme()
     QColor textColor = palette.color(QPalette::WindowText);
 
     if (windowColor.lightness() < 128 && textColor.lightness() > 128) {
-        return "dark";
-    } else {
         return "light";
+    } else {
+        return "dark";
     }
 #endif
 
