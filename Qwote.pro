@@ -35,9 +35,9 @@ FORMS +=                                        \
     src/SettingsPage/settingspage.ui            \
 
 RESOURCES +=                                    \
-    src/Resources/resources.qrc                 \
+    src/resources/resources.qrc                 \
 
-RC_FILE = src/Resources/appicon.rc
+RC_FILE = src/resources/appicon.rc
 
 
 win32 {
@@ -45,8 +45,8 @@ win32 {
 }
 
 TRANSLATIONS +=                                 \
-    src/Resources/tr/Qwote_en.ts                \
-    src/Resources/tr/Qwote_fr.ts                \
+    src/resources/tr/Qwote_en.ts                \
+    src/resources/tr/Qwote_fr.ts                \
 
 CONFIG += lrelease
 QM_FILES_RESOURCE_PREFIX=/translations/tr
