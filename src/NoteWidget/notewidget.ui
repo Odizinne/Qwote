@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>275</width>
-    <height>275</height>
+    <width>290</width>
+    <height>290</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>275</width>
-    <height>275</height>
+    <width>290</width>
+    <height>290</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -23,6 +23,67 @@
    <property name="spacing">
     <number>9</number>
    </property>
+   <item row="2" column="2">
+    <widget class="QToolButton" name="underlineButton">
+     <property name="minimumSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QToolButton" name="editorToolsButton">
+     <property name="minimumSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QToolButton" name="plusButton">
+     <property name="minimumSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QToolButton" name="italicButton">
+     <property name="minimumSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QToolButton" name="newButton">
      <property name="minimumSize">
@@ -36,7 +97,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="0" column="2">
     <widget class="QLineEdit" name="noteTitleLineEdit">
      <property name="minimumSize">
       <size>
@@ -59,8 +120,31 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QToolButton" name="pinButton">
+   <item row="1" column="0" colspan="5">
+    <widget class="QTextEdit" name="noteTextEdit">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QToolButton" name="minusButton">
+     <property name="minimumSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QToolButton" name="boldButton">
      <property name="minimumSize">
       <size>
        <width>26</width>
@@ -76,7 +160,7 @@
     </widget>
    </item>
    <item row="0" column="3">
-    <widget class="QToolButton" name="closeButton">
+    <widget class="QToolButton" name="pinButton">
      <property name="minimumSize">
       <size>
        <width>26</width>
@@ -86,15 +170,21 @@
      <property name="text">
       <string/>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="4">
-    <widget class="QTextEdit" name="noteTextEdit">
-     <property name="font">
-      <font>
-       <family>Consolas</family>
-       <pointsize>11</pointsize>
-      </font>
+   <item row="0" column="4">
+    <widget class="QToolButton" name="closeButton">
+     <property name="minimumSize">
+      <size>
+       <width>26</width>
+       <height>26</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>

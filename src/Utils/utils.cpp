@@ -108,26 +108,46 @@ QPixmap recolorIcon(const QPixmap &originalIcon, const QColor &color, int redRep
 
 QIcon Utils::getIcon(int icon, bool pinned) {
     QString theme = getTheme();
-    QPixmap iconPixmap;
     QColor recolor = (theme == "dark") ? QColor(0, 0, 0) : QColor(215, 215, 215);
+    QPixmap iconPixmap;
 
-    if (icon == 1) {
+    switch (icon) {
+    case 1:
         iconPixmap = QPixmap(":/icons/new_icon.png");
-    } else if (icon == 2) {
+        break;
+    case 2:
         iconPixmap = QPixmap(":/icons/pin_icon.png");
-        if (pinned) {
-            if (theme == "dark") {
-                recolor = getAccentColor("dark2");
-            } else {
-                recolor = getAccentColor("light3");
-            }
-        }
-    } else {
+        break;
+    case 3:
         iconPixmap = QPixmap(":/icons/delete_icon.png");
+        break;
+    case 4:
+        iconPixmap = QPixmap(":/icons/bold.png");
+        break;
+    case 5:
+        iconPixmap = QPixmap(":/icons/italic.png");
+        break;
+    case 6:
+        iconPixmap = QPixmap(":/icons/plus.png");
+        break;
+    case 7:
+        iconPixmap = QPixmap(":/icons/minus.png");
+        break;
+    case 8:
+        iconPixmap = QPixmap(":/icons/editortools.png");
+        break;
+    case 9:
+        iconPixmap = QPixmap(":/icons/underline.png");
+        break;
+    default:
+        return QIcon();
     }
 
+    if (pinned && (icon == 2 || icon == 4 || icon == 5 || icon == 8 || icon == 9)) {
+        recolor = (theme == "dark") ? getAccentColor("dark2") : getAccentColor("light3");
+    }
 
-    QPixmap recoloredIcon = recolorIcon(iconPixmap, recolor, 0, 0, 0); // Replace black (0, 0, 0)
+    QPixmap recoloredIcon = recolorIcon(iconPixmap, recolor, 0, 0, 0);
 
     return QIcon(recoloredIcon);
 }

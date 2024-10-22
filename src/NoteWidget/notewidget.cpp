@@ -46,8 +46,14 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     setMouseTracking(true);
 
     setTitle();
+    ui->noteTextEdit->setAcceptRichText(true);
     setButtons();
     loadSettings();
+    ui->boldButton->setVisible(false);
+    ui->italicButton->setVisible(false);
+    ui->plusButton->setVisible(false);
+    ui->minusButton->setVisible(false);
+    ui->underlineButton->setVisible(false);
 
     if (isRestored) {
         loadNoteFromFile();
@@ -64,6 +70,12 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     connect(ui->newButton, &QToolButton::clicked, this, &NoteWidget::createNewNote);
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::saveNote);
     connect(ui->noteTitleLineEdit, &QLineEdit::textChanged, this, &NoteWidget::onNoteTitleChanged);
+    connect(ui->plusButton, &QToolButton::pressed, this, &NoteWidget::increaseFontSize);
+    connect(ui->minusButton, &QToolButton::pressed, this, &NoteWidget::decreaseFontSize);
+    connect(ui->boldButton, &QToolButton::toggled, this, &NoteWidget::onBoldButtonStateChanged);
+    connect(ui->italicButton, &QToolButton::toggled, this, &NoteWidget::onItalicButtonStateChanged);
+    connect(ui->underlineButton, &QToolButton::toggled, this, &NoteWidget::onUnderlineButtonStateChanged);
+    connect(ui->editorToolsButton, &QToolButton::toggled, this, &NoteWidget::onEditorToolsButtonStateChanged);
 
     fadeIn();
 }
@@ -125,7 +137,7 @@ void NoteWidget::saveNote() {
     }
 
     QString noteTitle = ui->noteTitleLineEdit->text();
-    QString noteContent = ui->noteTextEdit->toPlainText();
+    QString noteContent = ui->noteTextEdit->toHtml();
     int fontSize = ui->noteTextEdit->font().pointSize();
 
     QJsonObject noteObject;
@@ -164,7 +176,8 @@ void NoteWidget::loadNoteFromFile() {
             QString noteContent = noteObject.value("content").toString();
             setWindowTitle(noteTitle);
             setNoteTitle(noteTitle);
-            setNoteContent(noteContent);
+
+            ui->noteTextEdit->setHtml(noteContent);
 
             int fontSize = noteObject.value("fontSize").toInt(11);
             setTextEditFontSize(fontSize);
@@ -185,6 +198,7 @@ void NoteWidget::loadNoteFromFile() {
 
     fadeIn();
 }
+
 
 void NoteWidget::setTextEditFontSize(int fontSize) {
     QFont font = ui->noteTextEdit->font();
@@ -259,6 +273,7 @@ void NoteWidget:: setButtons() {
     ui->newButton->setIcon(getIcon(1, false));
     ui->pinButton->setIcon(getIcon(2, false));
     ui->closeButton->setIcon(getIcon(3, false));
+    ui->italicButton->setText("I");
 }
 
 void NoteWidget::setTitle() {
@@ -468,4 +483,65 @@ void NoteWidget::loadSettings()
             file.close();
         }
     }
+    setTextEditButtons();
+}
+
+void NoteWidget::updateFormat() {
+    QTextCharFormat format;
+    QTextCursor cursor = ui->noteTextEdit->textCursor();
+
+    if (ui->boldButton->isChecked()) {
+        format.setFontWeight(QFont::Bold);
+    } else {
+        format.setFontWeight(QFont::Normal);
+    }
+
+    if (ui->italicButton->isChecked()) {
+        format.setFontItalic(true);
+    } else {
+        format.setFontItalic(false);
+    }
+
+    if (ui->underlineButton->isChecked()) {
+        format.setFontUnderline(true);
+    } else {
+        format.setFontUnderline(false);
+    }
+
+    cursor.mergeCharFormat(format);
+    ui->noteTextEdit->setTextCursor(cursor);
+}
+
+void NoteWidget::setTextEditButtons() {
+    ui->boldButton->setIcon(getIcon(4, false));
+    ui->italicButton->setIcon(getIcon(5, false));
+    ui->plusButton->setIcon(getIcon(6, false));
+    ui->minusButton->setIcon(getIcon(7, false));
+    ui->editorToolsButton->setIcon(getIcon(8, false));
+    ui->underlineButton->setIcon(getIcon(9, false));
+}
+
+void NoteWidget::onBoldButtonStateChanged() {
+    ui->boldButton->setIcon(getIcon(4, ui->boldButton->isChecked()));
+    updateFormat();
+}
+
+void NoteWidget::onItalicButtonStateChanged() {
+    ui->italicButton->setIcon(getIcon(5, ui->italicButton->isChecked()));
+    updateFormat();
+}
+
+void NoteWidget::onUnderlineButtonStateChanged() {
+    ui->underlineButton->setIcon(getIcon(9, ui->underlineButton->isChecked()));
+    updateFormat();
+}
+void NoteWidget::onEditorToolsButtonStateChanged() {
+    bool state = ui->editorToolsButton->isChecked();
+    ui->boldButton->setVisible(state);
+    ui->italicButton->setVisible(state);
+    ui->plusButton->setVisible(state);
+    ui->minusButton->setVisible(state);
+    ui->underlineButton->setVisible(state);
+
+    ui->editorToolsButton->setIcon(getIcon(8, state));
 }

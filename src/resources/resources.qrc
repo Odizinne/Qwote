@@ -4,5 +4,11 @@
         <file>icons/delete_icon.png</file>
         <file>icons/new_icon.png</file>
         <file>icons/pin_icon.png</file>
+        <file>icons/bold.png</file>
+        <file>icons/italic.png</file>
+        <file>icons/underline.png</file>
+        <file>icons/plus.png</file>
+        <file>icons/minus.png</file>
+        <file>icons/editortools.png</file>
     </qresource>
 </RCC>

@@ -31,6 +31,11 @@ public:
 private slots:
     void togglePinnedState();
     void onNoteTitleChanged();
+    void updateFormat();
+    void onBoldButtonStateChanged();
+    void onItalicButtonStateChanged();
+    void onUnderlineButtonStateChanged();
+    void onEditorToolsButtonStateChanged();
 
 private:
     Qwote* qwoteInstance;
@@ -46,6 +51,7 @@ private:
     QJsonObject settings;
     static const QString settingsFile;
     void setTextEditFontSize(int fontSize);
+    void setTextEditButtons();
 
     void setTitle();
     void placeNote();
