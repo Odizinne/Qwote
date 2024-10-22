@@ -33,7 +33,7 @@ bool ShortcutManager::isShortcutPresent()
 #ifdef __linux__
 const QString desktopFile = QDir::homePath() + "/.config/autostart/qwote.desktop";
 
-bool Utils::isDesktopfilePresent()
+bool ShortcutManager::isDesktopfilePresent()
 {
     if (QFile::exists(desktopFile)) {
         return true;
@@ -75,7 +75,7 @@ void removeDesktopFile()
     }
 }
 
-void Utils::manageDesktopFile(bool state)
+void ShortcutManager::manageDesktopFile(bool state)
 {
     if (state) {
         createDesktopFile();
