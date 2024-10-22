@@ -32,27 +32,27 @@ void Qwote::createTrayIcon()
     trayIcon->setIcon(QIcon(":/icons/postit_icon.png"));
     QMenu *trayMenu = new QMenu(this);
 
-    QAction *newAction = new QAction("New note", this);
+    QAction *newAction = new QAction(tr("New note"), this);
     connect(newAction, &QAction::triggered, this, &Qwote::createNewNote);
     trayMenu->addAction(newAction);
 
-    startupAction = new QAction("Start with system", this);
+    startupAction = new QAction(tr("Start with system"), this);
     startupAction->setCheckable(true);
     startupAction->setChecked(isShortcutPresent());
     connect(startupAction, &QAction::triggered, this, &Qwote::onStartupActionStateChanged);
     trayMenu->addAction(startupAction);
 
-    QAction *settingsAction = new QAction("Settings", this);
+    QAction *settingsAction = new QAction(tr("Settings"), this);
     connect(settingsAction, &QAction::triggered, this, &Qwote::showSettings);
     trayMenu->addAction(settingsAction);
 
     trayMenu->addSeparator();
 
-    QAction *deleteAllAction = new QAction("Delete all notes", this);
+    QAction *deleteAllAction = new QAction(tr("Delete all notes"), this);
     connect(deleteAllAction, &QAction::triggered, this, &Qwote::deleteAllNotes);
     trayMenu->addAction(deleteAllAction);
 
-    QAction *exitAction = new QAction("Exit", this);
+    QAction *exitAction = new QAction(tr("Exit"), this);
     connect(exitAction, &QAction::triggered, this, &Qwote::quitQwote);
     trayMenu->addAction(exitAction);
 
@@ -71,7 +71,7 @@ void Qwote::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 
 void Qwote::createNewNote() {
-    NoteWidget *newNote = new NoteWidget(nullptr, QString(), false, this); // Pass the Qwote instance
+    NoteWidget *newNote = new NoteWidget(nullptr, QString(), false, this);
     noteWidgets.append(newNote);
 
     if (settingsPage) {
@@ -146,6 +146,5 @@ void Qwote::quitQwote()
 }
 
 void Qwote::onNoteDeleted(NoteWidget *noteWidget) {
-    // Remove the deleted NoteWidget from the list
     noteWidgets.removeAll(noteWidget);
 }

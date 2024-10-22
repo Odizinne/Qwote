@@ -26,24 +26,23 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     : QWidget(parent)
     , qwoteInstance(qwoteInstance)
     , ui(new Ui::NoteWidget)
-    , isDragging(false)
     , filePath(filePath)
+    , isDragging(false)
     , isRestored(restored)
     , isPinned(false)
+    , isResizing(false)
     , ctrlPressed(false)
+    , resizeDirection(Qt::Edges())
 {
     ui->setupUi(this);
-    setWindowTitle("New note");
+    setWindowTitle(tr("New note"));
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     setMouseTracking(true);
 
     setTitle();
+    setButtons();
     loadSettings();
-
-    ui->newButton->setIcon(getIcon(1, false));
-    ui->pinButton->setIcon(getIcon(2, false));
-    ui->closeButton->setIcon(getIcon(3, false));
 
     if (isRestored) {
         loadNoteFromFile();
@@ -113,8 +112,6 @@ void NoteWidget::createNewNoteFile() {
     } while (QFile::exists(appDataLocation + "/" + baseFileName));
 
     filePath = appDataLocation + "/" + baseFileName;
-
-    //saveNote();
 }
 
 void NoteWidget::saveNote() {
@@ -124,12 +121,12 @@ void NoteWidget::saveNote() {
 
     QString noteTitle = ui->noteTitleLineEdit->text();
     QString noteContent = ui->noteTextEdit->toPlainText();
-    int fontSize = ui->noteTextEdit->font().pointSize();  // Get current font size
+    int fontSize = ui->noteTextEdit->font().pointSize();
 
     QJsonObject noteObject;
     noteObject["title"] = noteTitle;
     noteObject["content"] = noteContent;
-    noteObject["fontSize"] = fontSize;  // Save font size
+    noteObject["fontSize"] = fontSize;
     noteObject["posX"] = pos().x();
     noteObject["posY"] = pos().y();
     noteObject["width"] = this->width();
@@ -164,7 +161,7 @@ void NoteWidget::loadNoteFromFile() {
             setNoteTitle(noteTitle);
             setNoteContent(noteContent);
 
-            int fontSize = noteObject.value("fontSize").toInt(11);  // Default to 11 if not found
+            int fontSize = noteObject.value("fontSize").toInt(11);
             setTextEditFontSize(fontSize);
 
             QPoint position(noteObject.value("posX").toInt(), noteObject.value("posY").toInt());
@@ -253,33 +250,15 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     painter.drawRoundedRect(rect(), 8, 8);
 }
 
+void NoteWidget:: setButtons() {
+    ui->newButton->setIcon(getIcon(1, false));
+    ui->pinButton->setIcon(getIcon(2, false));
+    ui->closeButton->setIcon(getIcon(3, false));
+}
+
 void NoteWidget::setTitle() {
-    QStringList placeholders = {
-        "shopping list",
-        "Give it a name",
-        "Name this note",
-        "My super note",
-        "Remember This",
-        "Quick Thoughts",
-        "Note to Self",
-        "Code Snippets",
-        "Work in Progress",
-        "Ideas",
-        "Workflows"
-    };
-
-    int randomIndex = QRandomGenerator::global()->bounded(placeholders.size());
-    QString randomPlaceholder = placeholders[randomIndex];
-
-    QPalette palette = ui->noteTitleLineEdit->palette();
-    if (getTheme() == "dark") {
-        palette.setColor(QPalette::Text, getAccentColor("dark2"));
-    } else {
-        palette.setColor(QPalette::Text, getAccentColor("light3"));
-    }
-    ui->noteTitleLineEdit->setPalette(palette);
-
-    ui->noteTitleLineEdit->setPlaceholderText(randomPlaceholder);
+    ui->noteTitleLineEdit->setPalette(setTitleColor(ui->noteTitleLineEdit->palette()));
+    ui->noteTitleLineEdit->setPlaceholderText(getRandomPlaceholder());
 }
 
 void NoteWidget::mousePressEvent(QMouseEvent *event) {
@@ -304,7 +283,7 @@ void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
         this->move(newPos);
     } else if (isResizing) {
         QRect currentGeometry = this->geometry();
-        QPoint globalMousePos = event->globalPosition().toPoint();  // Updated here
+        QPoint globalMousePos = event->globalPosition().toPoint();
 
         if (resizeDirection & Qt::LeftEdge) {
             int newX = globalMousePos.x();

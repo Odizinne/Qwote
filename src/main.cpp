@@ -1,6 +1,8 @@
 #include <QApplication>
 #include <QSharedMemory>
 #include "qwoteserver.h"
+#include <QLocale>
+#include <QTranslator>
 
 const QString SERVER_NAME = "QwoteServer";
 
@@ -28,6 +30,14 @@ int main(int argc, char *argv[]) {
     }
 
     QApplication app(argc, argv);
+
+    QLocale locale;
+    QString languageCode = locale.name().section('_', 0, 0);
+    QTranslator translator;
+    if (translator.load(":/translations/Tr/Qwote_" + languageCode + ".qm")) {
+        app.installTranslator(&translator);
+    }
+
     app.setStyle("fusion");
     app.setQuitOnLastWindowClosed(false);
 

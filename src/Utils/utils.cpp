@@ -4,6 +4,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QProcess>
+#include <QRandomGenerator>
 
 QString Utils::getTheme()
 {
@@ -108,4 +109,32 @@ QIcon Utils::getIcon(int icon, bool pinned) {
     QPixmap recoloredIcon = recolorIcon(iconPixmap, recolor, 0, 0, 0); // Replace black (0, 0, 0)
 
     return QIcon(recoloredIcon);
+}
+
+QString Utils::getRandomPlaceholder() {
+    QStringList placeholders = {
+        "shopping list",
+        "Give it a name",
+        "Name this note",
+        "My super note",
+        "Remember This",
+        "Quick Thoughts",
+        "Note to Self",
+        "Code Snippets",
+        "Work in Progress",
+        "Ideas",
+        "Workflows"
+    };
+
+    int randomIndex = QRandomGenerator::global()->bounded(placeholders.size());
+    return placeholders[randomIndex];
+}
+
+QPalette Utils::setTitleColor(QPalette originalPalette) {
+    if (getTheme() == "dark") {
+        originalPalette.setColor(QPalette::Text, getAccentColor("dark2"));
+    } else {
+        originalPalette.setColor(QPalette::Text, getAccentColor("light3"));
+    }
+    return originalPalette;
 }

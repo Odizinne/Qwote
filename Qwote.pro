@@ -13,7 +13,6 @@ INCLUDEPATH +=                                  \
     src/ShortcutManager/                        \
     src/Utils/                                  \
 
-
 SOURCES +=                                      \
     src/main.cpp                                \
     src/NoteWidget/notewidget.cpp               \
@@ -42,3 +41,10 @@ RC_FILE = src/Resources/appicon.rc
 
 LIBS += -luser32 -ladvapi32
 
+TRANSLATIONS +=                                 \
+    src/Resources/tr/Qwote_en.ts    \
+    src/Resources/tr/Qwote_fr.ts    \
+
+CONFIG += lrelease
+QM_FILES_RESOURCE_PREFIX=/translations/tr
+CONFIG += embed_translations

@@ -19,13 +19,13 @@ public:
     explicit NoteWidget(QWidget *parent, const QString &filePath, bool restored, Qwote *qwoteInstance = nullptr);
     ~NoteWidget();
 
+    static QList<NoteWidget*> existingNotes;
     void setNoteTitle(const QString &title);
     void setNoteContent(const QString &content);
+    void restorePosition(const QPoint &position);
     void deleteNote();
     void createNewNote();
     void savePosition();
-    void restorePosition(const QPoint &position);
-    static QList<NoteWidget*> existingNotes;
     void loadSettings();
 
 private slots:
@@ -35,24 +35,29 @@ private slots:
 private:
     Qwote* qwoteInstance;
     Ui::NoteWidget *ui;
-    bool isDragging;
     QString filePath;
+    bool isDragging;
     bool isRestored;
-    QPoint dragStartPosition;
     bool isPinned;
+    bool isResizing;
+    bool ctrlPressed;
+    Qt::Edges resizeDirection;
+    QPoint dragStartPosition;
+    QJsonObject settings;
+    static const QString settingsFile;
+    void setTextEditFontSize(int fontSize);
+
     void setTitle();
     void placeNote();
     void fadeIn();
-    void updateCursorShape(const QPoint &pos);
-    bool isResizing = false;
-    Qt::Edges resizeDirection = Qt::Edges();
-    void setTextEditFontSize(int fontSize);
     void increaseFontSize();
     void decreaseFontSize();
     void resetFontSize();
-    QJsonObject settings;
-    static const QString settingsFile;
-    bool ctrlPressed;
+    void updateCursorShape(const QPoint &pos);
+    void createNewNoteFile();
+    void loadNoteFromFile();
+    void saveNote();
+    void setButtons();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -62,10 +67,6 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
-
-    void createNewNoteFile();
-    void loadNoteFromFile();
-    void saveNote();
 
 signals:
     void closed();
