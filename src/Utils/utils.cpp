@@ -113,17 +113,17 @@ QIcon Utils::getIcon(int icon, bool pinned) {
 
 QString Utils::getRandomPlaceholder() {
     QStringList placeholders = {
-        "shopping list",
-        "Give it a name",
-        "Name this note",
-        "My super note",
-        "Remember This",
-        "Quick Thoughts",
-        "Note to Self",
-        "Code Snippets",
-        "Work in Progress",
-        "Ideas",
-        "Workflows"
+        QObject::tr("Shopping list"),
+        QObject::tr("Give it a name"),
+        QObject::tr("Name this note"),
+        QObject::tr("My super note"),
+        QObject::tr("Remember This"),
+        QObject::tr("Quick Thoughts"),
+        QObject::tr("Note to Self"),
+        QObject::tr("Code Snippets"),
+        QObject::tr("Work in Progress"),
+        QObject::tr("Ideas"),
+        QObject::tr("Workflows")
     };
 
     int randomIndex = QRandomGenerator::global()->bounded(placeholders.size());
