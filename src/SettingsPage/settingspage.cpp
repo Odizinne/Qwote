@@ -6,9 +6,14 @@
 #include <QFontDatabase>
 #include <QStandardPaths>
 
+#ifdef _WIN32
 const QString SettingsPage::settingsFile = QStandardPaths::writableLocation(
                                                QStandardPaths::AppDataLocation)
                                            + "/Qwote/settings.json";
+#elif __linux__
+const QString SettingsPage::settingsFile = QDir::homePath() + "/.config/Qwote/settings.json";
+
+#endif
 
 SettingsPage::SettingsPage(QWidget *parent)
     : QMainWindow(parent)

@@ -1,14 +1,16 @@
 #include "utils.h"
-#include <windows.h>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QDir>
 #include <QProcess>
 #include <QRandomGenerator>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 QString Utils::getTheme()
 {
-    // Determine the theme based on registry value
     QSettings settings(
         "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         QSettings::NativeFormat);
@@ -17,7 +19,6 @@ QString Utils::getTheme()
     return (value == 0) ? "light" : "dark";
 }
 
-// Helper function to convert a BYTE value to a hex string
 QString toHex(BYTE value) {
     const char* hexDigits = "0123456789ABCDEF";
     return QString("%1%2")
@@ -25,9 +26,9 @@ QString toHex(BYTE value) {
         .arg(hexDigits[value & 0xF]);
 }
 
-// Function to fetch the accent color directly from the Windows registry
 QString Utils::getAccentColor(const QString &accentKey)
 {
+#ifdef _WIN32
     HKEY hKey;
     BYTE accentPalette[32];  // AccentPalette contains 32 bytes
     DWORD bufferSize = sizeof(accentPalette);
@@ -67,6 +68,9 @@ QString Utils::getAccentColor(const QString &accentKey)
 
     // Fallback color if registry access fails
     return "#FFFFFF";
+#elif __linux__
+    return "#FFFFFF";
+#endif
 }
 
 QPixmap recolorIcon(const QPixmap &originalIcon, const QColor &color, int redReplace, int greenReplace, int blueReplace)

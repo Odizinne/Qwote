@@ -16,9 +16,14 @@
 
 using namespace Utils;
 const int resizeMargin = 7;
+#ifdef _WIN32
 const QString NoteWidget::settingsFile = QStandardPaths::writableLocation(
                                                QStandardPaths::AppDataLocation)
                                            + "/Qwote/settings.json";
+#elif __linux__
+const QString NoteWidget::settingsFile = QDir::homePath() + "/.config/Qwote/settings.json";
+
+#endif
 
 QList<NoteWidget*> NoteWidget::existingNotes;
 
@@ -257,7 +262,9 @@ void NoteWidget:: setButtons() {
 }
 
 void NoteWidget::setTitle() {
+#ifdef _WIN32
     ui->noteTitleLineEdit->setPalette(setTitleColor(ui->noteTitleLineEdit->palette()));
+#endif
     ui->noteTitleLineEdit->setPlaceholderText(getRandomPlaceholder());
 }
 

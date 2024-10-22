@@ -5,6 +5,7 @@
 #include <QShortcut>
 #include <QStandardPaths>
 
+#ifdef _WIN32
 void ShortcutManager::manageShortcut(bool state)
 {
     QString shortcutName = "Qwote.lnk";
@@ -27,4 +28,59 @@ bool ShortcutManager::isShortcutPresent()
 
     return QFile::exists(shortcutPath);
 }
+#endif
 
+#ifdef __linux__
+const QString desktopFile = QDir::homePath() + "/.config/autostart/qwote.desktop";
+
+bool Utils::isDesktopfilePresent()
+{
+    if (QFile::exists(desktopFile)) {
+        return true;
+    }
+    return false;
+}
+
+void createDesktopFile()
+{
+
+    QFileInfo fileInfo(desktopFile);
+    QDir dir = fileInfo.dir();
+
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    QString applicationFolder = QCoreApplication::applicationDirPath();
+    QString desktopEntryContent =
+        "[Desktop Entry]\n"
+        "Path=" + applicationFolder + "\n"
+                              "Type=Application\n"
+                              "Exec=" + QCoreApplication::applicationFilePath() + "\n"
+                                                    "Name=Qwote\n";
+
+    QFile file(desktopFile);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << desktopEntryContent;
+        file.close();
+    }
+}
+
+void removeDesktopFile()
+{
+    QFile file(desktopFile);
+    if (file.exists()) {
+        file.remove();
+    }
+}
+
+void Utils::manageDesktopFile(bool state)
+{
+    if (state) {
+        createDesktopFile();
+    } else {
+        removeDesktopFile();
+    }
+}
+#endif

@@ -38,7 +38,11 @@ void Qwote::createTrayIcon()
 
     startupAction = new QAction(tr("Start with system"), this);
     startupAction->setCheckable(true);
+#ifdef _WIN32
     startupAction->setChecked(isShortcutPresent());
+#elif __linux__
+    startupAction->setChecked(isDesktopfilePresent());
+#endif
     connect(startupAction, &QAction::triggered, this, &Qwote::onStartupActionStateChanged);
     trayMenu->addAction(startupAction);
 
@@ -102,7 +106,11 @@ bool Qwote::restoreSavedNotes() {
 }
 
 void Qwote::onStartupActionStateChanged() {
+#ifdef _WIN32
     manageShortcut(startupAction->isChecked());
+#elif __linux__
+    manageDesktopFile(startupAction->isChecked());
+#endif
 }
 
 void Qwote::showSettings()
