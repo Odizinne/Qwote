@@ -39,11 +39,14 @@ RESOURCES +=                                    \
 
 RC_FILE = src/Resources/appicon.rc
 
-LIBS += -luser32 -ladvapi32
+
+win32 {
+    LIBS += -luser32 -ladvapi32
+}
 
 TRANSLATIONS +=                                 \
-    src/Resources/tr/Qwote_en.ts    \
-    src/Resources/tr/Qwote_fr.ts    \
+    src/Resources/tr/Qwote_en.ts                \
+    src/Resources/tr/Qwote_fr.ts                \
 
 CONFIG += lrelease
 QM_FILES_RESOURCE_PREFIX=/translations/tr
