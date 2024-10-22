@@ -18,7 +18,7 @@
     <message>
         <location filename="../../Utils/utils.cpp" line="116"/>
         <source>Shopping list</source>
-        <translation></translation>
+        <translation type="unfinished">Liste de courses</translation>
     </message>
     <message>
         <location filename="../../Utils/utils.cpp" line="117"/>

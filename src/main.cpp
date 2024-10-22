@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     QLocale locale;
     QString languageCode = locale.name().section('_', 0, 0);
     QTranslator translator;
-    if (translator.load(":/translations/Tr/Qwote_" + languageCode + ".qm")) {
+    if (translator.load(":/translations/tr/Qwote_" + languageCode + ".qm")) {
         app.installTranslator(&translator);
     }
 
