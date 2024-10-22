@@ -18,13 +18,14 @@ QString Utils::getTheme()
 
     return (value == 0) ? "light" : "dark";
 }
-
+#ifdef _WIN32
 QString toHex(BYTE value) {
     const char* hexDigits = "0123456789ABCDEF";
     return QString("%1%2")
         .arg(hexDigits[value >> 4])
         .arg(hexDigits[value & 0xF]);
 }
+#endif
 
 QString Utils::getAccentColor(const QString &accentKey)
 {
