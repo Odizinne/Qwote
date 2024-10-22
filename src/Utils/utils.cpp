@@ -9,14 +9,28 @@
 #include <windows.h>
 #endif
 
+
 QString Utils::getTheme()
 {
+#ifdef _WIN32
     QSettings settings(
         "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         QSettings::NativeFormat);
     int value = settings.value("AppsUseLightTheme", 1).toInt();
 
     return (value == 0) ? "light" : "dark";
+#elif __linux__
+    QPalette palette = QApplication::palette();
+    QColor windowColor = palette.color(QPalette::Window);
+    QColor textColor = palette.color(QPalette::WindowText);
+
+    if (windowColor.lightness() < 128 && textColor.lightness() > 128) {
+        return "dark";
+    } else {
+        return "light";
+    }
+#endif
+
 }
 #ifdef _WIN32
 QString toHex(BYTE value) {
