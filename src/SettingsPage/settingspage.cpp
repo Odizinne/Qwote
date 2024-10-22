@@ -57,7 +57,11 @@ void SettingsPage::loadSettings()
 
     QFile file(settingsFile);
     if (!file.exists()) {
+#ifdef _WIN32
         ui->fontComboBox->setCurrentText("Consolas");
+#elif __linux__
+        ui->fontComboBox->setCurrentText("Monospace");
+#endif
 
     } else {
         if (file.open(QIODevice::ReadOnly)) {
