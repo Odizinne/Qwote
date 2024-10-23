@@ -10,5 +10,6 @@
         <file>icons/plus.png</file>
         <file>icons/minus.png</file>
         <file>icons/editortools.png</file>
+        <file>icons/strikethrough.png</file>
     </qresource>
 </RCC>

@@ -50,40 +50,34 @@ QString Utils::getAccentColor(const QString &accentKey)
     BYTE accentPalette[32];  // AccentPalette contains 32 bytes
     DWORD bufferSize = sizeof(accentPalette);
 
-    // Open the Windows registry key for AccentPalette
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-        // Read the AccentPalette binary data
         if (RegGetValueW(hKey, NULL, L"AccentPalette", RRF_RT_REG_BINARY, NULL, accentPalette, &bufferSize) == ERROR_SUCCESS) {
-            // Close the registry key after reading
             RegCloseKey(hKey);
 
-            // Determine the correct index based on the accentKey
             int index = 0;
-            if (accentKey == "dark2") index = 20;   // Index for "dark2"
-            else if (accentKey == "light3") index = 0;  // Index for "light3"
+            if (accentKey == "dark2") index = 20;
+            else if (accentKey == "light3") index = 0;
+            else if (accentKey == "light2") index = 4;
             else if (accentKey == "normal") index = 12;
             else {
                 qDebug() << "Invalid accentKey provided.";
-                return "#FFFFFF";  // Return white if invalid accentKey
+                return "#FFFFFF";
             }
 
-            // Extract RGB values and convert them to hex format
             QString red = toHex(accentPalette[index]);
             QString green = toHex(accentPalette[index + 1]);
             QString blue = toHex(accentPalette[index + 2]);
 
-            // Return the hex color code
             return QString("#%1%2%3").arg(red, green, blue);
         } else {
             qDebug() << "Failed to retrieve AccentPalette from the registry.";
         }
 
-        RegCloseKey(hKey);  // Ensure the key is closed
+        RegCloseKey(hKey);
     } else {
         qDebug() << "Failed to open registry key.";
     }
 
-    // Fallback color if registry access fails
     return "#FFFFFF";
 #elif __linux__
     return "#FFFFFF";
@@ -139,12 +133,15 @@ QIcon Utils::getIcon(int icon, bool pinned) {
     case 9:
         iconPixmap = QPixmap(":/icons/underline.png");
         break;
+    case 10:
+        iconPixmap = QPixmap(":/icons/strikethrough.png");
+        break;
     default:
         return QIcon();
     }
 
-    if (pinned && (icon == 2 || icon == 4 || icon == 5 || icon == 8 || icon == 9)) {
-        recolor = (theme == "dark") ? getAccentColor("dark2") : getAccentColor("light3");
+    if (pinned && (icon == 2 || icon == 4 || icon == 5 || icon == 8 || icon == 9 || icon == 10)) {
+        recolor = (theme == "dark") ? getAccentColor("dark2") : getAccentColor("light2");
     }
 
     QPixmap recoloredIcon = recolorIcon(iconPixmap, recolor, 0, 0, 0);
@@ -175,7 +172,7 @@ QPalette Utils::setTitleColor(QPalette originalPalette) {
     if (getTheme() == "dark") {
         originalPalette.setColor(QPalette::Text, getAccentColor("dark2"));
     } else {
-        originalPalette.setColor(QPalette::Text, getAccentColor("light3"));
+        originalPalette.setColor(QPalette::Text, getAccentColor("light2"));
     }
     return originalPalette;
 }

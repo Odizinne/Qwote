@@ -36,6 +36,7 @@ private slots:
     void onItalicButtonStateChanged();
     void onUnderlineButtonStateChanged();
     void onEditorToolsButtonStateChanged();
+    void onStrikethroughButtonStateChanged();
 
 private:
     Qwote* qwoteInstance;
