@@ -80,6 +80,7 @@ void Qwote::createNewNote() {
 
     if (settingsPage) {
         connect(settingsPage, &SettingsPage::fontChanged, newNote, &NoteWidget::loadSettings);
+        connect(settingsPage, &SettingsPage::opacityChanged, newNote, &NoteWidget::loadSettings);
     }
 }
 
@@ -127,6 +128,7 @@ void Qwote::showSettings()
     connect(settingsPage, &SettingsPage::closed, this, &Qwote::onSettingsPageClosed);
     for (NoteWidget *noteWidget : noteWidgets) {
         connect(settingsPage, &SettingsPage::fontChanged, noteWidget, &NoteWidget::loadSettings);
+        connect(settingsPage, &SettingsPage::opacityChanged, noteWidget, &NoteWidget::loadSettings);
     }
     settingsPage->show();
 }

@@ -52,9 +52,12 @@ private:
     QPoint dragStartPosition;
     QJsonObject settings;
     static const QString settingsFile;
+    int opacity;
+
     void setTextEditFontSize(int fontSize);
     void setTextEditButtons();
-
+    void setTitleTransparency();
+    void setContentTransparency();
     void setTitle();
     void placeNote();
     void fadeIn();

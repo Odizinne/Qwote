@@ -14,6 +14,7 @@
 #include <QRandomGenerator>
 #include <QFont>
 #include <QTextBlock>
+#include <QGraphicsBlurEffect>
 
 using namespace Utils;
 const int resizeMargin = 7;
@@ -39,6 +40,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     , isResizing(false)
     , ctrlPressed(false)
     , resizeDirection(Qt::Edges())
+    , opacity(255)
 {
     ui->setupUi(this);
     setWindowTitle(tr("New note"));
@@ -47,6 +49,8 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     setMouseTracking(true);
 
     setTitle();
+    setTitleTransparency();
+    setContentTransparency();
     setButtons();
     setTextEditButtons();
     loadSettings();
@@ -179,7 +183,6 @@ void NoteWidget::loadNoteFromFile() {
 
             ui->noteTextEdit->setHtml(noteContent);
             QStringList lines = ui->noteTextEdit->toPlainText().split('\n');
-            qDebug() << lines;
             bool allHaveBullets = std::all_of(lines.begin(), lines.end(), [](const QString &line) {
                 return line.trimmed().startsWith("•");
             });
@@ -275,6 +278,7 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     QColor backgroundColor;
     backgroundColor = this->palette().color(QPalette::Window);
 
+    backgroundColor.setAlpha(opacity);
     painter.setBrush(backgroundColor);
     painter.setPen(Qt::transparent);
     painter.drawRoundedRect(rect(), 8, 8);
@@ -484,11 +488,15 @@ void NoteWidget::loadSettings()
                 settings = doc.object();
                 QFont userFont;
                 userFont.setFamily(settings.value("font").toString());
+                opacity = settings.value("opacity").toInt();
                 userFont.setPointSize(currentSize);
                 ui->noteTextEdit->setFont(userFont);
                 userFont.setPointSize(titleSize);
                 userFont.setBold(true);
                 ui->noteTitleLineEdit->setFont(userFont);
+                setContentTransparency();
+                setTitleTransparency();
+                update();
             }
             file.close();
         }
@@ -632,3 +640,25 @@ void NoteWidget::revertBulletList() {
 
     disconnect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
 }
+
+void NoteWidget::setTitleTransparency() {
+
+    QPalette titlePalette = ui->noteTitleLineEdit->palette();
+
+    QColor actualBaseColor = titlePalette.color(QPalette::Base);
+    actualBaseColor.setAlpha(opacity);
+    titlePalette.setColor(QPalette::Base, actualBaseColor);
+
+    ui->noteTitleLineEdit->setPalette(titlePalette);
+}
+
+void NoteWidget::setContentTransparency() {
+    QPalette contentPalette = ui->noteTextEdit->palette();
+
+    QColor actualBaseColor = contentPalette.color(QPalette::Base);
+    actualBaseColor.setAlpha(opacity);
+    contentPalette.setColor(QPalette::Base, actualBaseColor);
+
+    ui->noteTextEdit->setPalette(contentPalette);
+}
+

@@ -24,6 +24,7 @@ SettingsPage::SettingsPage(QWidget *parent)
     loadSettings();
 
     connect(ui->fontComboBox, &QComboBox::currentIndexChanged, this, &SettingsPage::onFontComboBoxIndexChanged);
+    connect(ui->opacitySlider, &QSlider::valueChanged, this, &SettingsPage::onOpacitySliderValueChanged);
 }
 
 SettingsPage::~SettingsPage()
@@ -70,6 +71,7 @@ void SettingsPage::loadSettings()
             if (parseError.error == QJsonParseError::NoError) {
                 settings = doc.object();
                 ui->fontComboBox->setCurrentText(settings.value("font").toString());
+                ui->opacitySlider->setValue(settings.value("opacity").toInt());
             }
             file.close();
         }
@@ -79,6 +81,7 @@ void SettingsPage::loadSettings()
 void SettingsPage::saveSettings()
 {
     settings["font"] = ui->fontComboBox->currentText();
+    settings["opacity"] = ui->opacitySlider->value();
 
     QFile file(settingsFile);
     if (file.open(QIODevice::WriteOnly)) {
@@ -86,4 +89,9 @@ void SettingsPage::saveSettings()
         file.write(doc.toJson(QJsonDocument::Indented));
         file.close();
     }
+}
+
+void SettingsPage::onOpacitySliderValueChanged() {
+    saveSettings();
+    emit opacityChanged();
 }

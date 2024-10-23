@@ -26,10 +26,12 @@ private:
 
 private slots:
     void onFontComboBoxIndexChanged();
+    void onOpacitySliderValueChanged();
 
 signals:
     void fontChanged();
     void closed();
+    void opacityChanged();
 };
 
 #endif // SETTINGSPAGE_H
