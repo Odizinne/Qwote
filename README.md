@@ -1,6 +1,6 @@
 # Qwote
 
-![image](assets/screenshot.png)
+![image](assets/screenshot.png) ![image](assets/screenshot_editor.png)
 
 ## Features
 
@@ -11,11 +11,14 @@ Qwote feature a tray icon. With it you can:
 - Delete all opened notes
 - Exit
 
-Notes features 3 buttons:
+Notes features 4 buttons:
 
 - New button
+- Editor tools
 - Pin button
 - Delete button
+
+Editor tools button will show advanced text controls.
 
 Pin button will keep your notes on top of other windows.
 
