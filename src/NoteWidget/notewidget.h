@@ -37,6 +37,7 @@ private slots:
     void onUnderlineButtonStateChanged();
     void onEditorToolsButtonStateChanged();
     void onStrikethroughButtonStateChanged();
+    void onBulletListButtonStateChanged();
 
 private:
     Qwote* qwoteInstance;
@@ -65,6 +66,9 @@ private:
     void loadNoteFromFile();
     void saveNote();
     void setButtons();
+    void addBulletOnNewLine();
+    void convertToBulletList();
+    void revertBulletList();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

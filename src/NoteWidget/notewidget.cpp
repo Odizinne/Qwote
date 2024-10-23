@@ -13,6 +13,7 @@
 #include <QPropertyAnimation>
 #include <QRandomGenerator>
 #include <QFont>
+#include <QTextBlock>
 
 using namespace Utils;
 const int resizeMargin = 7;
@@ -46,8 +47,8 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     setMouseTracking(true);
 
     setTitle();
-    ui->noteTextEdit->setAcceptRichText(true);
     setButtons();
+    setTextEditButtons();
     loadSettings();
     ui->frame->setVisible(false);
 
@@ -73,6 +74,8 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     connect(ui->underlineButton, &QToolButton::toggled, this, &NoteWidget::onUnderlineButtonStateChanged);
     connect(ui->editorToolsButton, &QToolButton::toggled, this, &NoteWidget::onEditorToolsButtonStateChanged);
     connect(ui->strikethroughButton, &QToolButton::toggled, this, &NoteWidget::onStrikethroughButtonStateChanged);
+    connect(ui->bulletlistButton, &QToolButton::toggled, this, &NoteWidget::onBulletListButtonStateChanged);
+
 
     fadeIn();
 }
@@ -175,6 +178,17 @@ void NoteWidget::loadNoteFromFile() {
             setNoteTitle(noteTitle);
 
             ui->noteTextEdit->setHtml(noteContent);
+            QStringList lines = ui->noteTextEdit->toPlainText().split('\n');
+            qDebug() << lines;
+            bool allHaveBullets = std::all_of(lines.begin(), lines.end(), [](const QString &line) {
+                return line.trimmed().startsWith("•");
+            });
+
+            if (allHaveBullets) {
+                ui->bulletlistButton->setChecked(true);
+                ui->bulletlistButton->setIcon(getIcon(11, true));
+                convertToBulletList();
+            }
 
             int fontSize = noteObject.value("fontSize").toInt(11);
             setTextEditFontSize(fontSize);
@@ -270,7 +284,6 @@ void NoteWidget:: setButtons() {
     ui->newButton->setIcon(getIcon(1, false));
     ui->pinButton->setIcon(getIcon(2, false));
     ui->closeButton->setIcon(getIcon(3, false));
-    ui->italicButton->setText("I");
 }
 
 void NoteWidget::setTitle() {
@@ -480,7 +493,7 @@ void NoteWidget::loadSettings()
             file.close();
         }
     }
-    setTextEditButtons();
+
 }
 
 void NoteWidget::updateFormat() {
@@ -523,6 +536,7 @@ void NoteWidget::setTextEditButtons() {
     ui->editorToolsButton->setIcon(getIcon(8, false));
     ui->underlineButton->setIcon(getIcon(9, false));
     ui->strikethroughButton->setIcon(getIcon(10, false));
+    ui->bulletlistButton->setIcon(getIcon(11, false));
 }
 
 void NoteWidget::onBoldButtonStateChanged() {
@@ -549,4 +563,72 @@ void NoteWidget::onEditorToolsButtonStateChanged() {
     bool state = ui->editorToolsButton->isChecked();
     ui->frame->setVisible(state);
     ui->editorToolsButton->setIcon(getIcon(8, state));
+}
+
+void NoteWidget::onBulletListButtonStateChanged() {
+    bool state = ui->bulletlistButton->isChecked();
+    if (state) {
+        convertToBulletList();
+    } else {
+        revertBulletList();
+    }
+    ui->bulletlistButton->setIcon(getIcon(11, state));
+}
+
+void NoteWidget::addBulletOnNewLine() {
+    QTextCursor cursor = ui->noteTextEdit->textCursor();
+
+    if (cursor.atBlockEnd() && cursor.block().text().isEmpty()) {
+        cursor.insertText("• ");
+    }
+}
+
+void NoteWidget::convertToBulletList() {
+    QTextCursor cursor = ui->noteTextEdit->textCursor();
+    int cursorPosition = cursor.position();
+
+    QStringList lines = ui->noteTextEdit->toPlainText().split('\n');
+
+    QStringList modifiedLines;
+    bool hasChanges = false;
+
+    for (const QString &line : lines) {
+        QString trimmedLine = line.trimmed();
+        if (!trimmedLine.startsWith("•")) {
+            modifiedLines << QString("• %1").arg(trimmedLine);
+            hasChanges = true;
+        } else {
+            modifiedLines << trimmedLine;
+        }
+    }
+
+    if (hasChanges) {
+        ui->noteTextEdit->setPlainText(modifiedLines.join('\n'));
+    }
+
+    cursor.setPosition(qMin(cursorPosition, ui->noteTextEdit->toPlainText().length()));
+    ui->noteTextEdit->setTextCursor(cursor);
+
+    connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
+}
+
+
+void NoteWidget::revertBulletList() {
+    QTextCursor cursor = ui->noteTextEdit->textCursor();
+    int cursorPosition = cursor.position();
+
+    QStringList lines = ui->noteTextEdit->toPlainText().split('\n');
+    QStringList unbulletedLines;
+
+    for (const QString &line : lines) {
+        QString unbulletedLine = line.startsWith("•") ? line.mid(2).trimmed() : line;
+        unbulletedLines << unbulletedLine;
+    }
+
+    ui->noteTextEdit->setPlainText(unbulletedLines.join('\n'));
+
+    cursor.setPosition(qMin(cursorPosition, ui->noteTextEdit->toPlainText().length()));
+    ui->noteTextEdit->setTextCursor(cursor);
+
+    disconnect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
 }

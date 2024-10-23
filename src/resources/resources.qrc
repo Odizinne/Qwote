@@ -11,5 +11,6 @@
         <file>icons/minus.png</file>
         <file>icons/editortools.png</file>
         <file>icons/strikethrough.png</file>
+        <file>icons/bulletlist.png</file>
     </qresource>
 </RCC>

@@ -138,6 +138,19 @@
       <property name="spacing">
        <number>9</number>
       </property>
+      <item row="0" column="6">
+       <widget class="QToolButton" name="minusButton">
+        <property name="minimumSize">
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QToolButton" name="italicButton">
         <property name="minimumSize">
@@ -154,8 +167,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QToolButton" name="underlineButton">
+      <item row="0" column="0">
+       <widget class="QToolButton" name="boldButton">
         <property name="minimumSize">
          <size>
           <width>26</width>
@@ -186,34 +199,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="6">
-       <widget class="QToolButton" name="plusButton">
-        <property name="minimumSize">
-         <size>
-          <width>26</width>
-          <height>26</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QToolButton" name="minusButton">
-        <property name="minimumSize">
-         <size>
-          <width>26</width>
-          <height>26</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QToolButton" name="boldButton">
+      <item row="0" column="2">
+       <widget class="QToolButton" name="underlineButton">
         <property name="minimumSize">
          <size>
           <width>26</width>
@@ -228,7 +215,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
+      <item row="0" column="5">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
@@ -240,6 +227,35 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="7">
+       <widget class="QToolButton" name="plusButton">
+        <property name="minimumSize">
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QToolButton" name="bulletlistButton">
+        <property name="minimumSize">
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

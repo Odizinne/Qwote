@@ -136,11 +136,14 @@ QIcon Utils::getIcon(int icon, bool pinned) {
     case 10:
         iconPixmap = QPixmap(":/icons/strikethrough.png");
         break;
+    case 11:
+        iconPixmap = QPixmap(":/icons/bulletlist.png");
+        break;
     default:
         return QIcon();
     }
 
-    if (pinned && (icon == 2 || icon == 4 || icon == 5 || icon == 8 || icon == 9 || icon == 10)) {
+    if (pinned && (icon == 2 || icon == 4 || icon == 5 || icon == 8 || icon == 9 || icon == 10 || icon == 11)) {
         recolor = (theme == "dark") ? getAccentColor("dark2") : getAccentColor("light2");
     }
 
