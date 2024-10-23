@@ -488,7 +488,7 @@ void NoteWidget::loadSettings()
                 settings = doc.object();
                 QFont userFont;
                 userFont.setFamily(settings.value("font").toString());
-                opacity = settings.value("opacity").toInt();
+                opacity = settings.contains("opacity") ? settings.value("opacity").toInt() : 255;
                 userFont.setPointSize(currentSize);
                 ui->noteTextEdit->setFont(userFont);
                 userFont.setPointSize(titleSize);
