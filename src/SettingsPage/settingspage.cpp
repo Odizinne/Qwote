@@ -25,7 +25,7 @@ SettingsPage::SettingsPage(QWidget *parent)
 
     connect(ui->fontComboBox, &QComboBox::currentIndexChanged, this, &SettingsPage::onFontComboBoxIndexChanged);
     connect(ui->opacitySlider, &QSlider::valueChanged, this, &SettingsPage::onOpacitySliderValueChanged);
-    connect(ui->roundedCornersCheckbox, &QCheckBox::checkStateChanged, this, &SettingsPage::onRoundedCornersCheckboxStateChanged);
+    connect(ui->roundedCornersCheckbox, &QCheckBox::stateChanged, this, &SettingsPage::onRoundedCornersCheckboxStateChanged);
 }
 
 SettingsPage::~SettingsPage()
