@@ -27,11 +27,11 @@ private:
 private slots:
     void onFontComboBoxIndexChanged();
     void onOpacitySliderValueChanged();
+    void onRoundedCornersCheckboxStateChanged();
 
 signals:
-    void fontChanged();
+    void settingsChanged();
     void closed();
-    void opacityChanged();
 };
 
 #endif // SETTINGSPAGE_H

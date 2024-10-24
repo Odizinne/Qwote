@@ -79,8 +79,7 @@ void Qwote::createNewNote() {
     noteWidgets.append(newNote);
 
     if (settingsPage) {
-        connect(settingsPage, &SettingsPage::fontChanged, newNote, &NoteWidget::loadSettings);
-        connect(settingsPage, &SettingsPage::opacityChanged, newNote, &NoteWidget::loadSettings);
+        connect(settingsPage, &SettingsPage::settingsChanged, newNote, &NoteWidget::loadSettings);
     }
 }
 
@@ -127,8 +126,7 @@ void Qwote::showSettings()
     settingsPage->setAttribute(Qt::WA_DeleteOnClose);
     connect(settingsPage, &SettingsPage::closed, this, &Qwote::onSettingsPageClosed);
     for (NoteWidget *noteWidget : noteWidgets) {
-        connect(settingsPage, &SettingsPage::fontChanged, noteWidget, &NoteWidget::loadSettings);
-        connect(settingsPage, &SettingsPage::opacityChanged, noteWidget, &NoteWidget::loadSettings);
+        connect(settingsPage, &SettingsPage::settingsChanged, noteWidget, &NoteWidget::loadSettings);
     }
     settingsPage->show();
 }

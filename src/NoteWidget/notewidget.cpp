@@ -41,6 +41,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     , ctrlPressed(false)
     , resizeDirection(Qt::Edges())
     , opacity(255)
+    , roundedCorners(true)
 {
     ui->setupUi(this);
     setWindowTitle(tr("New note"));
@@ -281,7 +282,11 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     backgroundColor.setAlpha(opacity);
     painter.setBrush(backgroundColor);
     painter.setPen(Qt::transparent);
-    painter.drawRoundedRect(rect(), 8, 8);
+    if (roundedCorners) {
+        painter.drawRoundedRect(rect(), 8, 8);
+    } else {
+        painter.drawRect(rect());
+    }
 }
 
 void NoteWidget:: setButtons() {
@@ -489,6 +494,7 @@ void NoteWidget::loadSettings()
                 QFont userFont;
                 userFont.setFamily(settings.value("font").toString());
                 opacity = settings.contains("opacity") ? settings.value("opacity").toInt() : 255;
+                roundedCorners = settings.contains("roundedCorners") ? settings.value("roundedCorners").toBool() : true;
                 userFont.setPointSize(currentSize);
                 ui->noteTextEdit->setFont(userFont);
                 userFont.setPointSize(titleSize);

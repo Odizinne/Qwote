@@ -53,6 +53,7 @@ private:
     QJsonObject settings;
     static const QString settingsFile;
     int opacity;
+    bool roundedCorners;
 
     void setTextEditFontSize(int fontSize);
     void setTextEditButtons();

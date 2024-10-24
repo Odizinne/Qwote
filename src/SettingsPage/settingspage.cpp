@@ -25,6 +25,7 @@ SettingsPage::SettingsPage(QWidget *parent)
 
     connect(ui->fontComboBox, &QComboBox::currentIndexChanged, this, &SettingsPage::onFontComboBoxIndexChanged);
     connect(ui->opacitySlider, &QSlider::valueChanged, this, &SettingsPage::onOpacitySliderValueChanged);
+    connect(ui->roundedCornersCheckbox, &QCheckBox::checkStateChanged, this, &SettingsPage::onRoundedCornersCheckboxStateChanged);
 }
 
 SettingsPage::~SettingsPage()
@@ -34,8 +35,7 @@ SettingsPage::~SettingsPage()
 }
 
 void SettingsPage::populateFontComboBox() {
-    QFontDatabase fontDatabase;
-    QStringList fonts = fontDatabase.families();
+    QStringList fonts = QFontDatabase::families();
 
     ui->fontComboBox->clear();
 
@@ -46,7 +46,7 @@ void SettingsPage::populateFontComboBox() {
 
 void SettingsPage::onFontComboBoxIndexChanged() {
     saveSettings();
-    emit fontChanged();
+    emit settingsChanged();
 }
 
 void SettingsPage::loadSettings()
@@ -72,6 +72,7 @@ void SettingsPage::loadSettings()
                 settings = doc.object();
                 ui->fontComboBox->setCurrentText(settings.value("font").toString());
                 ui->opacitySlider->setValue(settings.value("opacity").toInt());
+                ui->roundedCornersCheckbox->setChecked(settings.value("roundedCorners").toBool());
             }
             file.close();
         }
@@ -82,6 +83,7 @@ void SettingsPage::saveSettings()
 {
     settings["font"] = ui->fontComboBox->currentText();
     settings["opacity"] = ui->opacitySlider->value();
+    settings["roundedCorners"] = ui->roundedCornersCheckbox->isChecked();
 
     QFile file(settingsFile);
     if (file.open(QIODevice::WriteOnly)) {
@@ -93,5 +95,10 @@ void SettingsPage::saveSettings()
 
 void SettingsPage::onOpacitySliderValueChanged() {
     saveSettings();
-    emit opacityChanged();
+    emit settingsChanged();
+}
+
+void SettingsPage::onRoundedCornersCheckboxStateChanged() {
+    saveSettings();
+    emit settingsChanged();
 }
