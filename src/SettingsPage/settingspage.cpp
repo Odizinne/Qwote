@@ -1,19 +1,7 @@
 #include "settingspage.h"
 #include "ui_settingspage.h"
-#include <QFile>
-#include <QJsonDocument>
-#include <QDir>
 #include <QFontDatabase>
-#include <QStandardPaths>
-
-#ifdef _WIN32
-const QString SettingsPage::settingsFile = QStandardPaths::writableLocation(
-                                               QStandardPaths::AppDataLocation)
-                                           + "/Qwote/settings.json";
-#elif __linux__
-const QString SettingsPage::settingsFile = QDir::homePath() + "/.config/Qwote/settings.json";
-
-#endif
+#include <QSettings>
 
 SettingsPage::SettingsPage(QWidget *parent)
     : QMainWindow(parent)
@@ -36,10 +24,8 @@ SettingsPage::~SettingsPage()
 
 void SettingsPage::populateFontComboBox() {
     QStringList fonts = QFontDatabase::families();
-
     ui->fontComboBox->clear();
-
-    foreach (const QString &font, fonts) {
+    for (const QString &font : fonts) {
         ui->fontComboBox->addItem(font);
     }
 }
@@ -51,46 +37,27 @@ void SettingsPage::onFontComboBoxIndexChanged() {
 
 void SettingsPage::loadSettings()
 {
-    QDir settingsDir(QFileInfo(settingsFile).absolutePath());
-    if (!settingsDir.exists()) {
-        settingsDir.mkpath(settingsDir.absolutePath());
-    }
+    QSettings settings("Odizinne", "Qwote");
 
-    QFile file(settingsFile);
-    if (!file.exists()) {
+    QString defaultFont;
 #ifdef _WIN32
-        ui->fontComboBox->setCurrentText("Consolas");
+    defaultFont = "Consolas";
 #elif __linux__
-        ui->fontComboBox->setCurrentText("Monospace");
+    defaultFont = "Monospace";
 #endif
 
-    } else {
-        if (file.open(QIODevice::ReadOnly)) {
-            QJsonParseError parseError;
-            QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
-            if (parseError.error == QJsonParseError::NoError) {
-                settings = doc.object();
-                ui->fontComboBox->setCurrentText(settings.value("font").toString());
-                ui->opacitySlider->setValue(settings.value("opacity").toInt());
-                ui->roundedCornersCheckbox->setChecked(settings.value("roundedCorners").toBool());
-            }
-            file.close();
-        }
-    }
+    ui->fontComboBox->setCurrentText(settings.value("font", defaultFont).toString());
+    ui->opacitySlider->setValue(settings.value("opacity", 255).toInt());
+    ui->roundedCornersCheckbox->setChecked(settings.value("roundedCorners", true).toBool());
 }
 
 void SettingsPage::saveSettings()
 {
-    settings["font"] = ui->fontComboBox->currentText();
-    settings["opacity"] = ui->opacitySlider->value();
-    settings["roundedCorners"] = ui->roundedCornersCheckbox->isChecked();
+    QSettings settings("Odizinne", "Qwote");
 
-    QFile file(settingsFile);
-    if (file.open(QIODevice::WriteOnly)) {
-        QJsonDocument doc(settings);
-        file.write(doc.toJson(QJsonDocument::Indented));
-        file.close();
-    }
+    settings.setValue("font", ui->fontComboBox->currentText());
+    settings.setValue("opacity", ui->opacitySlider->value());
+    settings.setValue("roundedCorners", ui->roundedCornersCheckbox->isChecked());
 }
 
 void SettingsPage::onOpacitySliderValueChanged() {

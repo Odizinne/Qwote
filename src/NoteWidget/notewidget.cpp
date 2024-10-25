@@ -14,18 +14,10 @@
 #include <QRandomGenerator>
 #include <QFont>
 #include <QTextBlock>
-#include <QGraphicsBlurEffect>
+#include <QSettings>
 
 using namespace Utils;
 const int resizeMargin = 7;
-#ifdef _WIN32
-const QString NoteWidget::settingsFile = QStandardPaths::writableLocation(
-                                               QStandardPaths::AppDataLocation)
-                                           + "/Qwote/settings.json";
-#elif __linux__
-const QString NoteWidget::settingsFile = QDir::homePath() + "/.config/Qwote/settings.json";
-
-#endif
 
 QList<NoteWidget*> NoteWidget::existingNotes;
 
@@ -467,47 +459,25 @@ void NoteWidget::loadSettings()
 #elif __linux__
     defaultFontFamily = "Monospace";
 #endif
-    QFont currentFont = ui->noteTextEdit->font();
-    int currentSize = currentFont.pointSize();
-    int titleSize = 11;
 
-    QDir settingsDir(QFileInfo(settingsFile).absolutePath());
-    if (!settingsDir.exists()) {
-        settingsDir.mkpath(settingsDir.absolutePath());
-    }
+    QSettings settings("Odizinne", "Qwote");
 
-    QFile file(settingsFile);
-    if (!file.exists()) {
-        QFont defaultFont;
-        defaultFont.setFamily(defaultFontFamily);
-        defaultFont.setPointSize(11);
-        ui->noteTextEdit->setFont(defaultFont);
-        defaultFont.setBold(true);
-        ui->noteTitleLineEdit->setFont(defaultFont);
+    QFont font;
+    font.setFamily(settings.value("font", defaultFontFamily).toString());
+    font.setPointSize(settings.value("fontSize", 11).toInt());
+    ui->noteTextEdit->setFont(font);
 
-    } else {
-        if (file.open(QIODevice::ReadOnly)) {
-            QJsonParseError parseError;
-            QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
-            if (parseError.error == QJsonParseError::NoError) {
-                settings = doc.object();
-                QFont userFont;
-                userFont.setFamily(settings.value("font").toString());
-                opacity = settings.contains("opacity") ? settings.value("opacity").toInt() : 255;
-                roundedCorners = settings.contains("roundedCorners") ? settings.value("roundedCorners").toBool() : true;
-                userFont.setPointSize(currentSize);
-                ui->noteTextEdit->setFont(userFont);
-                userFont.setPointSize(titleSize);
-                userFont.setBold(true);
-                ui->noteTitleLineEdit->setFont(userFont);
-                setContentTransparency();
-                setTitleTransparency();
-                update();
-            }
-            file.close();
-        }
-    }
+    QFont titleFont = font;
+    titleFont.setPointSize(settings.value("titleFontSize", 11).toInt());
+    titleFont.setBold(true);
+    ui->noteTitleLineEdit->setFont(titleFont);
 
+    opacity = settings.value("opacity", 255).toInt();
+    roundedCorners = settings.value("roundedCorners", true).toBool();
+
+    setContentTransparency();
+    setTitleTransparency();
+    update();
 }
 
 void NoteWidget::updateFormat() {

@@ -50,8 +50,6 @@ private:
     bool ctrlPressed;
     Qt::Edges resizeDirection;
     QPoint dragStartPosition;
-    QJsonObject settings;
-    static const QString settingsFile;
     int opacity;
     bool roundedCorners;
 
