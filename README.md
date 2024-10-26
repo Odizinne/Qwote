@@ -24,7 +24,7 @@ Pin button will keep your notes on top of other windows.
 
 Notes closed with delete button will not be saved / reloaded across app restart.
 
-You can use keyboard shortcuts to adjust font size.
+**Keyboard shortcuts:**
 
 - `ctrl` + `MouseWheelUp`  
 Adjust size up (max 16px)
@@ -34,6 +34,15 @@ Adjust size down (min 8px)
 
 - `ctrl` + `MouseMiddleButtonClick`  
 Reset to default size (11px)
+
+- `ctrl` + `N`  
+Crate new note
+
+- `ctrl` + `W`  
+Delete actual note
+
+- `ctrl` + `E`  
+Toggle editor tools
 
 ## Installation
 
