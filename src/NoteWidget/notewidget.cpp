@@ -402,6 +402,19 @@ void NoteWidget::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Control) {
         ctrlPressed = true;
     }
+
+    if (ctrlPressed && event->key() == Qt::Key_N) {
+        createNewNote();
+    }
+
+    if (ctrlPressed && event->key() == Qt::Key_W) {
+        deleteNote();
+    }
+
+    if (ctrlPressed && event->key() == Qt::Key_E) {
+        ui->editorToolsButton->setChecked(!ui->editorToolsButton->isChecked());
+    }
+
     QWidget::keyPressEvent(event);
 }
 
