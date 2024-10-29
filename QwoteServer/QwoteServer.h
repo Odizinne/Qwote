@@ -11,6 +11,7 @@ class QwoteServer : public QObject {
 public:
     QwoteServer(QObject *parent = nullptr);
     bool startServer(const QString &serverName);
+    void stopServer();
 
 private slots:
     void handleNewConnection();

@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QSharedMemory>
+#include <QLocalSocket>
 #include "QwoteServer.h"
 #include <QLocale>
 #include <QTranslator>
@@ -45,6 +46,11 @@ int main(int argc, char *argv[]) {
     if (!qwoteServer.startServer(SERVER_NAME)) {
         return 1;
     }
+
+    QObject::connect(&app, &QApplication::aboutToQuit, [&]() {
+        qwoteServer.stopServer();
+        sharedMemory.detach();
+    });
 
     return app.exec();
 }

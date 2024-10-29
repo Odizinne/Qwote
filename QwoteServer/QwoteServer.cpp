@@ -31,3 +31,9 @@ void QwoteServer::handleClientData() {
     clientConnection->disconnectFromServer();
     clientConnection->deleteLater();
 }
+
+void QwoteServer::stopServer() {
+    if (server->isListening()) {
+        server->close();
+    }
+}
