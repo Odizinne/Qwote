@@ -518,32 +518,24 @@ void NoteWidget::updateFormat() {
     QTextCharFormat format;
     QTextCursor cursor = ui->noteTextEdit->textCursor();
 
-    if (ui->boldButton->isChecked()) {
-        format.setFontWeight(QFont::Bold);
-    } else {
-        format.setFontWeight(QFont::Normal);
-    }
-
-    if (ui->italicButton->isChecked()) {
-        format.setFontItalic(true);
-    } else {
-        format.setFontItalic(false);
-    }
-
-    if (ui->underlineButton->isChecked()) {
-        format.setFontUnderline(true);
-    } else {
-        format.setFontUnderline(false);
-    }
-
-    if (ui->strikethroughButton->isChecked()) {
-        format.setFontStrikeOut(true);
-    } else {
-        format.setFontStrikeOut(false);
-    }
-
-    cursor.mergeCharFormat(format);
+    // Clear selection by moving the cursor to a single position
+    cursor.clearSelection();
     ui->noteTextEdit->setTextCursor(cursor);
+
+    // Apply bold formatting based on the button's state
+    format.setFontWeight(ui->boldButton->isChecked() ? QFont::Bold : QFont::Normal);
+
+    // Apply italic formatting based on the button's state
+    format.setFontItalic(ui->italicButton->isChecked());
+
+    // Apply underline formatting based on the button's state
+    format.setFontUnderline(ui->underlineButton->isChecked());
+
+    // Apply strikethrough formatting based on the button's state
+    format.setFontStrikeOut(ui->strikethroughButton->isChecked());
+
+    // Set the character format for future text inputs
+    ui->noteTextEdit->setCurrentCharFormat(format);
 }
 
 void NoteWidget::setTextEditButtons() {
@@ -603,49 +595,59 @@ void NoteWidget::addBulletOnNewLine() {
 
 void NoteWidget::convertToBulletList() {
     QTextCursor cursor = ui->noteTextEdit->textCursor();
-    int cursorPosition = cursor.position();
+    cursor.beginEditBlock();
 
-    QStringList lines = ui->noteTextEdit->toPlainText().split('\n');
+    // Move the cursor to the start of the document
+    cursor.movePosition(QTextCursor::Start);
 
-    QStringList modifiedLines;
-    bool hasChanges = false;
+    while (!cursor.atEnd()) {
+        cursor.movePosition(QTextCursor::StartOfLine);
 
-    for (const QString &line : lines) {
-        QString trimmedLine = line.trimmed();
-        if (!trimmedLine.startsWith("•")) {
-            modifiedLines << QString("• %1").arg(trimmedLine);
-            hasChanges = true;
-        } else {
-            modifiedLines << trimmedLine;
+        // Select the current line and check its content
+        cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+        QString lineText = cursor.selectedText().trimmed();
+
+        // Only add bullet if it does not already exist
+        if (!lineText.startsWith("•")) {
+            cursor.insertText("• " + lineText);  // Insert bullet without altering formatting
         }
+
+        cursor.movePosition(QTextCursor::NextBlock);  // Move to the next line
     }
 
-    if (hasChanges) {
-        ui->noteTextEdit->setPlainText(modifiedLines.join('\n'));
-    }
+    cursor.endEditBlock();
 
-    cursor.setPosition(qMin(cursorPosition, ui->noteTextEdit->toPlainText().length()));
+    // Restore cursor to its original position
     ui->noteTextEdit->setTextCursor(cursor);
 
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
 }
 
-
 void NoteWidget::revertBulletList() {
     QTextCursor cursor = ui->noteTextEdit->textCursor();
-    int cursorPosition = cursor.position();
+    cursor.beginEditBlock();
 
-    QStringList lines = ui->noteTextEdit->toPlainText().split('\n');
-    QStringList unbulletedLines;
+    cursor.movePosition(QTextCursor::Start);
 
-    for (const QString &line : lines) {
-        QString unbulletedLine = line.startsWith("•") ? line.mid(2).trimmed() : line;
-        unbulletedLines << unbulletedLine;
+    while (!cursor.atEnd()) {
+        cursor.movePosition(QTextCursor::StartOfLine);
+
+        // Select the current line
+        cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+        QString lineText = cursor.selectedText();
+
+        // If the line starts with a bullet, remove it
+        if (lineText.trimmed().startsWith("•")) {
+            lineText = lineText.mid(2).trimmed();  // Remove the bullet symbol
+            cursor.insertText(lineText);  // Re-insert text without bullet
+        }
+
+        cursor.movePosition(QTextCursor::NextBlock);  // Move to the next line
     }
 
-    ui->noteTextEdit->setPlainText(unbulletedLines.join('\n'));
+    cursor.endEditBlock();
 
-    cursor.setPosition(qMin(cursorPosition, ui->noteTextEdit->toPlainText().length()));
+    // Restore cursor to its original position
     ui->noteTextEdit->setTextCursor(cursor);
 
     disconnect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
