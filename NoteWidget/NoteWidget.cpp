@@ -32,7 +32,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     , isResizing(false)
     , ctrlPressed(false)
     , resizeDirection(Qt::Edges())
-    , opacity(128)
+    , opacity(255)
     , roundedCorners(true)
     , frame(true)
 {

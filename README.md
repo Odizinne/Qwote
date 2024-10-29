@@ -71,6 +71,8 @@ Qwote will be available in your start menu.
 
 Download latest precompiled binary in release section.
 
+Wayland support is buggy atm.
+
 ## Credits
 
 Using edited icons from [veryicon](https://www.veryicon.com/).
