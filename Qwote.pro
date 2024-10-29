@@ -2,52 +2,50 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17
+CONFIG += c++17 silent lrelease embed_translations
 
-INCLUDEPATH +=                                  \
-    src/                                        \
-    src/NoteWidget/                             \
-    src/Qwote/                                  \
-    src/QwoteServer/                            \
-    src/SettingsPage/                           \
-    src/ShortcutManager/                        \
-    src/Utils/                                  \
+QM_FILES_RESOURCE_PREFIX=/translations/tr
 
-SOURCES +=                                      \
-    src/main.cpp                                \
-    src/NoteWidget/notewidget.cpp               \
-    src/Qwote/qwote.cpp                         \
-    src/QwoteServer/qwoteserver.cpp             \
-    src/SettingsPage/settingspage.cpp           \
-    src/ShortcutManager/shortcutmanager.cpp     \
-    src/Utils/utils.cpp                         \
+INCLUDEPATH +=                              \
+                                            \
+    NoteWidget/                             \
+    Qwote/                                  \
+    QwoteServer/                            \
+    SettingsPage/                           \
+    ShortcutManager/                        \
+    Utils/                                  \
 
-HEADERS +=                                      \
-    src/NoteWidget/notewidget.h                 \
-    src/Qwote/qwote.h                           \
-    src/QwoteServer/qwoteserver.h               \
-    src/SettingsPage/settingspage.h             \
-    src/ShortcutManager/shortcutmanager.h       \
-    src/Utils/utils.h                           \
+SOURCES +=                                  \
+    main.cpp                                \
+    NoteWidget/NoteWidget.cpp               \
+    Qwote/Qwote.cpp                         \
+    QwoteServer/QwoteServer.cpp             \
+    SettingsPage/SettingsPage.cpp           \
+    ShortcutManager/ShortcutManager.cpp     \
+    Utils/Utils.cpp                         \
 
-FORMS +=                                        \
-    src/NoteWidget/notewidget.ui                \
-    src/SettingsPage/settingspage.ui            \
+HEADERS +=                                  \
+    NoteWidget/NoteWidget.h                 \
+    Qwote/Qwote.h                           \
+    QwoteServer/QwoteServer.h               \
+    SettingsPage/SettingsPage.h             \
+    ShortcutManager/ShortcutManager.h       \
+    Utils/Utils.h                           \
 
-RESOURCES +=                                    \
-    src/resources/resources.qrc                 \
+FORMS +=                                    \
+    NoteWidget/NoteWidget.ui                \
+    SettingsPage/SettingsPage.ui            \
 
-RC_FILE = src/resources/appicon.rc
+RESOURCES +=                                \
+    resources/resources.qrc                 \
 
+
+TRANSLATIONS +=                             \
+    resources/tr/Qwote_en.ts                \
+    resources/tr/Qwote_fr.ts                \
+
+RC_FILE = resources/appicon.rc
 
 win32 {
     LIBS += -luser32 -ladvapi32
 }
-
-TRANSLATIONS +=                                 \
-    src/resources/tr/Qwote_en.ts                \
-    src/resources/tr/Qwote_fr.ts                \
-
-CONFIG += lrelease
-QM_FILES_RESOURCE_PREFIX=/translations/tr
-CONFIG += embed_translations

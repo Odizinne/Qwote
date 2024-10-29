@@ -1,5 +1,5 @@
-#include "settingspage.h"
-#include "ui_settingspage.h"
+#include "SettingsPage.h"
+#include "ui_SettingsPage.h"
 #include <QFontDatabase>
 #include <QSettings>
 

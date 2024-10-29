@@ -1,6 +1,6 @@
-#include "qwote.h"
-#include "notewidget.h"
-#include "shortcutmanager.h"
+#include "Qwote.h"
+#include "NoteWidget.h"
+#include "ShortcutManager.h"
 #include <QMenu>
 #include <QApplication>
 #include <QStandardPaths>

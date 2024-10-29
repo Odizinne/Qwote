@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QSharedMemory>
-#include "qwoteserver.h"
+#include "QwoteServer.h"
 #include <QLocale>
 #include <QTranslator>
 

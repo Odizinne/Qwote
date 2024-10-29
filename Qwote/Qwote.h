@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QSystemTrayIcon>
-#include "settingspage.h"
+#include "SettingsPage.h"
 
 class NoteWidget;
 

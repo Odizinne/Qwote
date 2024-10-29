@@ -1,7 +1,7 @@
-#include "notewidget.h"
-#include "qwote.h"
-#include "ui_notewidget.h"
-#include "utils.h"
+#include "NoteWidget.h"
+#include "Qwote.h"
+#include "ui_NoteWidget.h"
+#include "Utils.h"
 #include <QMouseEvent>
 #include <QStandardPaths>
 #include <QFile>

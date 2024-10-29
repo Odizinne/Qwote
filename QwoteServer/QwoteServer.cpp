@@ -1,4 +1,4 @@
-#include "qwoteserver.h"
+#include "QwoteServer.h"
 
 QwoteServer::QwoteServer(QObject *parent)
     : QObject(parent), server(new QLocalServer(this)) {}

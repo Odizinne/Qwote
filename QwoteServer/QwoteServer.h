@@ -3,7 +3,7 @@
 
 #include <QLocalServer>
 #include <QLocalSocket>
-#include "qwote.h"
+#include "Qwote.h"
 
 class QwoteServer : public QObject {
     Q_OBJECT
