@@ -58,6 +58,7 @@ QString Utils::getAccentColor(const QString &accentKey)
             if (accentKey == "dark2") index = 20;
             else if (accentKey == "light3") index = 0;
             else if (accentKey == "light2") index = 4;
+            else if (accentKey == "light1") index = 8;
             else if (accentKey == "normal") index = 12;
             else {
                 qDebug() << "Invalid accentKey provided.";

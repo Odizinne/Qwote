@@ -18,13 +18,10 @@ public:
 private:
     Ui::SettingsPage *ui;
     void loadSettings();
-    void saveSettings();
     void populateFontComboBox();
 
 private slots:
-    void onFontComboBoxIndexChanged();
-    void onOpacitySliderValueChanged();
-    void onRoundedCornersCheckboxStateChanged();
+    void saveSettings();
 
 signals:
     void settingsChanged();

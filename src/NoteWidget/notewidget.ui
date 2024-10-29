@@ -89,8 +89,8 @@
      <property name="font">
       <font>
        <family>Consolas</family>
-       <pointsize>12</pointsize>
-       <bold>true</bold>
+       <pointsize>11</pointsize>
+       <bold>false</bold>
       </font>
      </property>
      <property name="maxLength">

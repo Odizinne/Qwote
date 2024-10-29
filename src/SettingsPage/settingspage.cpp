@@ -11,9 +11,10 @@ SettingsPage::SettingsPage(QWidget *parent)
     populateFontComboBox();
     loadSettings();
 
-    connect(ui->fontComboBox, &QComboBox::currentIndexChanged, this, &SettingsPage::onFontComboBoxIndexChanged);
-    connect(ui->opacitySlider, &QSlider::valueChanged, this, &SettingsPage::onOpacitySliderValueChanged);
-    connect(ui->roundedCornersCheckbox, &QCheckBox::stateChanged, this, &SettingsPage::onRoundedCornersCheckboxStateChanged);
+    connect(ui->fontComboBox, &QComboBox::currentIndexChanged, this, &SettingsPage::saveSettings);
+    connect(ui->opacitySlider, &QSlider::valueChanged, this, &SettingsPage::saveSettings);
+    connect(ui->roundedCornersCheckbox, &QCheckBox::stateChanged, this, &SettingsPage::saveSettings);
+    connect(ui->frameCheckbox, &QCheckBox::stateChanged, this, &SettingsPage::saveSettings);
 }
 
 SettingsPage::~SettingsPage()
@@ -30,11 +31,6 @@ void SettingsPage::populateFontComboBox() {
     }
 }
 
-void SettingsPage::onFontComboBoxIndexChanged() {
-    saveSettings();
-    emit settingsChanged();
-}
-
 void SettingsPage::loadSettings()
 {
     QSettings settings("Odizinne", "Qwote");
@@ -47,8 +43,9 @@ void SettingsPage::loadSettings()
 #endif
 
     ui->fontComboBox->setCurrentText(settings.value("font", defaultFont).toString());
-    ui->opacitySlider->setValue(settings.value("opacity", 255).toInt());
+    ui->opacitySlider->setValue(settings.value("opacity", 128).toInt() + 127);
     ui->roundedCornersCheckbox->setChecked(settings.value("roundedCorners", true).toBool());
+    ui->frameCheckbox->setChecked(settings.value("frame", true).toBool());
 }
 
 void SettingsPage::saveSettings()
@@ -56,16 +53,10 @@ void SettingsPage::saveSettings()
     QSettings settings("Odizinne", "Qwote");
 
     settings.setValue("font", ui->fontComboBox->currentText());
-    settings.setValue("opacity", ui->opacitySlider->value());
+    settings.setValue("opacity", ui->opacitySlider->value() + 127);
     settings.setValue("roundedCorners", ui->roundedCornersCheckbox->isChecked());
-}
+    settings.setValue("frame", ui->frameCheckbox->isChecked());
+    qDebug() << ui->opacitySlider->value();
 
-void SettingsPage::onOpacitySliderValueChanged() {
-    saveSettings();
-    emit settingsChanged();
-}
-
-void SettingsPage::onRoundedCornersCheckboxStateChanged() {
-    saveSettings();
     emit settingsChanged();
 }

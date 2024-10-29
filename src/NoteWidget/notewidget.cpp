@@ -32,8 +32,9 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     , isResizing(false)
     , ctrlPressed(false)
     , resizeDirection(Qt::Edges())
-    , opacity(255)
+    , opacity(128)
     , roundedCorners(true)
+    , frame(true)
 {
     ui->setupUi(this);
     setWindowTitle(tr("New note"));
@@ -268,16 +269,36 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
 
-    QColor backgroundColor;
-    backgroundColor = this->palette().color(QPalette::Window);
-
+    QColor backgroundColor = this->palette().color(QPalette::Window);
     backgroundColor.setAlpha(opacity);
     painter.setBrush(backgroundColor);
     painter.setPen(Qt::transparent);
-    if (roundedCorners) {
-        painter.drawRoundedRect(rect(), 8, 8);
+
+    //if (roundedCorners) {
+    //    painter.drawRoundedRect(rect(), 8, 8);
+    //} else {
+    //    painter.drawRect(rect());
+    //}
+
+    QRect borderRect;
+
+    if (frame) {
+        QPalette titlePalette = ui->noteTitleLineEdit->palette();
+        QColor borderColor = titlePalette.color(QPalette::Text);
+        QPen borderPen(borderColor);
+        borderPen.setWidth(2);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(borderPen);
+        borderRect = rect().adjusted(1, 1, -1, -1);
     } else {
-        painter.drawRect(rect());
+        borderRect = rect();
+    }
+
+
+    if (roundedCorners) {
+        painter.drawRoundedRect(borderRect, 8, 8);
+    } else {
+        painter.drawRect(borderRect);
     }
 }
 
@@ -482,11 +503,11 @@ void NoteWidget::loadSettings()
 
     QFont titleFont = font;
     titleFont.setPointSize(settings.value("titleFontSize", 11).toInt());
-    titleFont.setBold(true);
     ui->noteTitleLineEdit->setFont(titleFont);
 
-    opacity = settings.value("opacity", 255).toInt();
+    opacity = settings.value("opacity", 128).toInt();
     roundedCorners = settings.value("roundedCorners", true).toBool();
+    frame = settings.value("frame", true).toBool();
 
     setContentTransparency();
     setTitleTransparency();

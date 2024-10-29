@@ -52,6 +52,7 @@ private:
     QPoint dragStartPosition;
     int opacity;
     bool roundedCorners;
+    bool frame;
 
     void setTextEditFontSize(int fontSize);
     void setTextEditButtons();
