@@ -114,6 +114,9 @@
         <height>0</height>
        </size>
       </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QComboBox::SizeAdjustPolicy::AdjustToContentsOnFirstShow</enum>
+      </property>
      </widget>
     </item>
     <item row="1" column="0">
@@ -192,6 +195,9 @@
         <width>0</width>
         <height>25</height>
        </size>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QComboBox::SizeAdjustPolicy::AdjustToContentsOnFirstShow</enum>
       </property>
      </widget>
     </item>

@@ -1,9 +1,10 @@
 #include <QApplication>
-#include <QSharedMemory>
+#include <QLocalServer>
 #include <QLocalSocket>
-#include "QwoteServer.h"
+#include <QDebug>
 #include <QLocale>
 #include <QTranslator>
+#include <Qwote.h>
 
 const QString SERVER_NAME = "QwoteServer";
 
@@ -11,29 +12,27 @@ int main(int argc, char *argv[]) {
 #ifdef __linux__
     qputenv("QT_QPA_PLATFORM", "xcb");
 #endif
-    QSharedMemory sharedMemory("QwoteID");
 
-    if (sharedMemory.attach()) {
-        QLocalSocket socket;
-        socket.connectToServer(SERVER_NAME);
+    QApplication app(argc, argv);
 
-        if (socket.waitForConnected()) {
-            QByteArray block;
-            QDataStream out(&block, QIODevice::WriteOnly);
-            out << QString("createNewNote");
-            socket.write(block);
-            socket.flush();
-            socket.waitForBytesWritten();
-            socket.disconnectFromServer();
-        }
+    QLocalSocket socket;
+    socket.connectToServer(SERVER_NAME);
+
+    if (socket.waitForConnected(100)) {
+        qDebug() << "Another instance is already running. Exiting...";
         return 0;
     }
 
-    if (!sharedMemory.create(1)) {
+    QLocalServer server;
+    if (!server.listen(SERVER_NAME)) {
+        qDebug() << "Unable to start the server:" << server.errorString();
         return 1;
     }
 
-    QApplication app(argc, argv);
+    QObject::connect(&server, &QLocalServer::newConnection, [&server]() {
+        QLocalSocket *clientConnection = server.nextPendingConnection();
+        clientConnection->disconnectFromServer();
+    });
 
     QLocale locale;
     QString languageCode = locale.name().section('_', 0, 0);
@@ -44,16 +43,7 @@ int main(int argc, char *argv[]) {
 
     app.setStyle("fusion");
     app.setQuitOnLastWindowClosed(false);
-
-    QwoteServer qwoteServer;
-    if (!qwoteServer.startServer(SERVER_NAME)) {
-        return 1;
-    }
-
-    QObject::connect(&app, &QApplication::aboutToQuit, &qwoteServer, [&]() {
-        qwoteServer.stopServer();
-        sharedMemory.detach();
-    });
+    Qwote qwote;
 
     return app.exec();
 }

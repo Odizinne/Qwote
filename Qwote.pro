@@ -19,7 +19,6 @@ SOURCES +=                                  \
     main.cpp                                \
     NoteWidget/NoteWidget.cpp               \
     Qwote/Qwote.cpp                         \
-    QwoteServer/QwoteServer.cpp             \
     SettingsPage/SettingsPage.cpp           \
     ShortcutManager/ShortcutManager.cpp     \
     Utils/Utils.cpp                         \
@@ -27,7 +26,6 @@ SOURCES +=                                  \
 HEADERS +=                                  \
     NoteWidget/NoteWidget.h                 \
     Qwote/Qwote.h                           \
-    QwoteServer/QwoteServer.h               \
     SettingsPage/SettingsPage.h             \
     ShortcutManager/ShortcutManager.h       \
     Utils/Utils.h                           \
