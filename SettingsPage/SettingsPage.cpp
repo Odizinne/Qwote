@@ -37,16 +37,16 @@ void SettingsPage::populateFontComboBox()
 void SettingsPage::populateColorComboBox()
 {
 #ifdef _WIN32
-    ui->colorComboBox->addItem("Windows");
+    ui->colorComboBox->addItem(tr("Windows"));
 #endif
-    ui->colorComboBox->addItem("Orange");
-    ui->colorComboBox->addItem("Red");
-    ui->colorComboBox->addItem("Blue");
-    ui->colorComboBox->addItem("Green");
-    ui->colorComboBox->addItem("Teal");
-    ui->colorComboBox->addItem("Pink");
-    ui->colorComboBox->addItem("Purple");
-    ui->colorComboBox->addItem("Yellow");
+    ui->colorComboBox->addItem(tr("Orange"));
+    ui->colorComboBox->addItem(tr("Red"));
+    ui->colorComboBox->addItem(tr("Blue"));
+    ui->colorComboBox->addItem(tr("Green"));
+    ui->colorComboBox->addItem(tr("Teal"));
+    ui->colorComboBox->addItem(tr("Pink"));
+    ui->colorComboBox->addItem(tr("Purple"));
+    ui->colorComboBox->addItem(tr("Yellow"));
 }
 
 void SettingsPage::loadSettings()
