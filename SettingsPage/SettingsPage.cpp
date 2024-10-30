@@ -25,7 +25,8 @@ SettingsPage::~SettingsPage()
     delete ui;
 }
 
-void SettingsPage::populateFontComboBox() {
+void SettingsPage::populateFontComboBox()
+{
     QStringList fonts = QFontDatabase::families();
     ui->fontComboBox->clear();
     for (const QString &font : fonts) {

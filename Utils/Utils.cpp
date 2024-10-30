@@ -101,7 +101,8 @@ QPixmap recolorIcon(const QPixmap &originalIcon, const QColor &color, int redRep
     return QPixmap::fromImage(img);
 }
 
-QIcon Utils::getIcon(int icon, bool pinned, const QString& color) {
+QIcon Utils::getIcon(int icon, bool pinned, const QString& color)
+{
     QString theme = getTheme();
     QColor recolor = (theme == "dark") ? QColor(0, 0, 0) : QColor(215, 215, 215);
     QPixmap iconPixmap;
@@ -168,7 +169,8 @@ QIcon Utils::getIcon(int icon, bool pinned, const QString& color) {
     return QIcon(recoloredIcon);
 }
 
-QString Utils::getRandomPlaceholder() {
+QString Utils::getRandomPlaceholder()
+{
     QStringList placeholders = {
         QObject::tr("Shopping list"),
         QObject::tr("Give it a name"),
@@ -187,7 +189,8 @@ QString Utils::getRandomPlaceholder() {
     return placeholders[randomIndex];
 }
 
-QPalette Utils::setTitleColor(QPalette originalPalette, const QString& color) {
+QPalette Utils::setTitleColor(QPalette originalPalette, const QString& color)
+{
     static const QMap<QString, QColor> colorMap = {
         { "Red", QColor(230, 45, 66) },
         { "Green", QColor(58, 148, 74) },

@@ -74,7 +74,8 @@ void Qwote::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void Qwote::createNewNote() {
+void Qwote::createNewNote()
+{
     NoteWidget *newNote = new NoteWidget(nullptr, QString(), false, this);
     noteWidgets.append(newNote);
 
@@ -83,7 +84,8 @@ void Qwote::createNewNote() {
     }
 }
 
-bool Qwote::restoreSavedNotes() {
+bool Qwote::restoreSavedNotes()
+{
     QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir(appDataLocation);
     if (!dir.exists()) {
@@ -105,7 +107,8 @@ bool Qwote::restoreSavedNotes() {
     return true;
 }
 
-void Qwote::onStartupActionStateChanged() {
+void Qwote::onStartupActionStateChanged()
+{
 #ifdef _WIN32
     manageShortcut(startupAction->isChecked());
 #elif __linux__
@@ -136,7 +139,8 @@ void Qwote::onSettingsPageClosed()
     settingsPage = nullptr;
 }
 
-void Qwote::deleteAllNotes() {
+void Qwote::deleteAllNotes()
+{
     for (NoteWidget *noteWidget : noteWidgets) {
         noteWidget->deleteNote();
     }
@@ -153,6 +157,7 @@ void Qwote::quitQwote()
     QApplication::quit();
 }
 
-void Qwote::onNoteDeleted(NoteWidget *noteWidget) {
+void Qwote::onNoteDeleted(NoteWidget *noteWidget)
+{
     noteWidgets.removeAll(noteWidget);
 }

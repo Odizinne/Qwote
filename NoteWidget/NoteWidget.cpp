@@ -78,11 +78,13 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     fadeIn();
 }
 
-NoteWidget::~NoteWidget() {
+NoteWidget::~NoteWidget()
+{
     delete ui;
 }
 
-void NoteWidget::togglePinnedState() {
+void NoteWidget::togglePinnedState()
+{
     isPinned = ui->pinButton->isChecked();
     setWindowFlag(Qt::WindowStaysOnTopHint, isPinned);
     ui->pinButton->setIcon(getIcon(2, isPinned, noteColor));
@@ -90,7 +92,8 @@ void NoteWidget::togglePinnedState() {
     saveNote();
 }
 
-void NoteWidget::placeNote() {
+void NoteWidget::placeNote()
+{
     QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
     int posX = screenGeometry.right() - this->width() - 20;
     int posY = 20;
@@ -112,7 +115,8 @@ void NoteWidget::placeNote() {
     this->move(newNoteRect.topLeft());
 }
 
-void NoteWidget::createNewNoteFile() {
+void NoteWidget::createNewNoteFile()
+{
     QString appDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     QDir dir(appDataLocation);
@@ -129,7 +133,8 @@ void NoteWidget::createNewNoteFile() {
     filePath = appDataLocation + "/" + baseFileName;
 }
 
-void NoteWidget::saveNote() {
+void NoteWidget::saveNote()
+{
     if (filePath.isEmpty()) {
         return;
     }
@@ -157,7 +162,8 @@ void NoteWidget::saveNote() {
     }
 }
 
-void NoteWidget::loadNoteFromFile() {
+void NoteWidget::loadNoteFromFile()
+{
     if (filePath.isEmpty()) {
         return;
     }
@@ -208,21 +214,25 @@ void NoteWidget::loadNoteFromFile() {
 }
 
 
-void NoteWidget::setTextEditFontSize(int fontSize) {
+void NoteWidget::setTextEditFontSize(int fontSize)
+{
     QFont font = ui->noteTextEdit->font();
     font.setPointSize(fontSize);
     ui->noteTextEdit->setFont(font);
 }
 
-void NoteWidget::setNoteTitle(const QString &title) {
+void NoteWidget::setNoteTitle(const QString &title)
+{
     ui->noteTitleLineEdit->setText(title);
 }
 
-void NoteWidget::setNoteContent(const QString &content) {
+void NoteWidget::setNoteContent(const QString &content)
+{
     ui->noteTextEdit->setPlainText(content);
 }
 
-void NoteWidget::deleteNote() {
+void NoteWidget::deleteNote()
+{
     connect(this, &NoteWidget::closed, qwoteInstance, [this]() {
         qwoteInstance->onNoteDeleted(this);
     });
@@ -244,13 +254,15 @@ void NoteWidget::deleteNote() {
     animation->start();
 }
 
-void NoteWidget::createNewNote() {
+void NoteWidget::createNewNote()
+{
     if (qwoteInstance) {
         qwoteInstance->createNewNote();
     }
 }
 
-void NoteWidget::savePosition() {
+void NoteWidget::savePosition()
+{
     if (!filePath.isEmpty()) {
         saveNote();
     }
@@ -260,12 +272,14 @@ void NoteWidget::restorePosition(const QPoint &position) {
     move(position);
 }
 
-void NoteWidget::onNoteTitleChanged() {
+void NoteWidget::onNoteTitleChanged()
+{
     saveNote();
     setWindowTitle(ui->noteTitleLineEdit->text());
 }
 
-void NoteWidget::paintEvent(QPaintEvent *event) {
+void NoteWidget::paintEvent(QPaintEvent *event)
+{
     Q_UNUSED(event);
     QPainter painter(this);
 
@@ -296,20 +310,21 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     }
 }
 
-void NoteWidget:: setButtons() {
+void NoteWidget:: setButtons()
+{
     ui->newButton->setIcon(getIcon(1, false, noteColor));
     ui->pinButton->setIcon(getIcon(2, false, noteColor));
     ui->closeButton->setIcon(getIcon(3, false, noteColor));
 }
 
-void NoteWidget::setTitle() {
-#ifdef _WIN32
+void NoteWidget::setTitle()
+{
     ui->noteTitleLineEdit->setPalette(setTitleColor(ui->noteTitleLineEdit->palette(), noteColor));
-#endif
     ui->noteTitleLineEdit->setPlaceholderText(getRandomPlaceholder());
 }
 
-void NoteWidget::mousePressEvent(QMouseEvent *event) {
+void NoteWidget::mousePressEvent(QMouseEvent *event)
+{
     if (ctrlPressed && event->button() == Qt::MiddleButton) {
         resetFontSize();
     }
@@ -325,7 +340,8 @@ void NoteWidget::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
+void NoteWidget::mouseMoveEvent(QMouseEvent *event)
+{
     if (isDragging) {
         QPoint newPos = this->pos() + (event->pos() - dragStartPosition);
         this->move(newPos);
@@ -364,7 +380,8 @@ void NoteWidget::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
-void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
+void NoteWidget::mouseReleaseEvent(QMouseEvent *event)
+{
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
         isResizing = false;
@@ -373,7 +390,8 @@ void NoteWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void NoteWidget::fadeIn() {
+void NoteWidget::fadeIn()
+{
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
     animation->setDuration(250);
     animation->setStartValue(0);
@@ -383,7 +401,8 @@ void NoteWidget::fadeIn() {
     animation->start();
 }
 
-void NoteWidget::updateCursorShape(const QPoint &pos) {
+void NoteWidget::updateCursorShape(const QPoint &pos)
+{
     Qt::Edges detectedEdges;
 
     if (pos.x() <= resizeMargin) {
@@ -413,7 +432,8 @@ void NoteWidget::updateCursorShape(const QPoint &pos) {
     resizeDirection = detectedEdges;
 }
 
-void NoteWidget::keyPressEvent(QKeyEvent *event) {
+void NoteWidget::keyPressEvent(QKeyEvent *event)
+{
     if (event->key() == Qt::Key_Control) {
         ctrlPressed = true;
     }
@@ -433,14 +453,16 @@ void NoteWidget::keyPressEvent(QKeyEvent *event) {
     QWidget::keyPressEvent(event);
 }
 
-void NoteWidget::keyReleaseEvent(QKeyEvent *event) {
+void NoteWidget::keyReleaseEvent(QKeyEvent *event)
+{
     if (event->key() == Qt::Key_Control) {
         ctrlPressed = false;
     }
     QWidget::keyReleaseEvent(event);
 }
 
-void NoteWidget::wheelEvent(QWheelEvent *event) {
+void NoteWidget::wheelEvent(QWheelEvent *event)
+{
     if (ctrlPressed) {
         if (event->angleDelta().y() > 0) {
             increaseFontSize();
@@ -454,7 +476,8 @@ void NoteWidget::wheelEvent(QWheelEvent *event) {
     }
 }
 
-void NoteWidget::increaseFontSize() {
+void NoteWidget::increaseFontSize()
+{
     QFont font = ui->noteTextEdit->font();
     int currentSize = font.pointSize();
     if (currentSize < 16) {
@@ -464,7 +487,8 @@ void NoteWidget::increaseFontSize() {
     }
 }
 
-void NoteWidget::decreaseFontSize() {
+void NoteWidget::decreaseFontSize()
+{
     QFont font = ui->noteTextEdit->font();
     int currentSize = font.pointSize();
     if (currentSize > 8) {
@@ -474,7 +498,8 @@ void NoteWidget::decreaseFontSize() {
     }
 }
 
-void NoteWidget::resetFontSize() {
+void NoteWidget::resetFontSize()
+{
     setTextEditFontSize(11);
     saveNote();
 }
@@ -508,13 +533,14 @@ void NoteWidget::loadSettings()
 
     noteColor = settings.value("color", defaultNoteColor).toString();
 
-    setTitle();
+    ui->noteTitleLineEdit->setPalette(setTitleColor(ui->noteTitleLineEdit->palette(), noteColor));
     setContentTransparency();
     setTitleTransparency();
     update();
 }
 
-void NoteWidget::updateFormat() {
+void NoteWidget::updateFormat()
+{
     QTextCharFormat format;
     QTextCursor cursor = ui->noteTextEdit->textCursor();
 
@@ -527,7 +553,8 @@ void NoteWidget::updateFormat() {
     ui->noteTextEdit->setCurrentCharFormat(format);
 }
 
-void NoteWidget::setTextEditButtons() {
+void NoteWidget::setTextEditButtons()
+{
     ui->boldButton->setIcon(getIcon(4, false, noteColor));
     ui->italicButton->setIcon(getIcon(5, false, noteColor));
     ui->plusButton->setIcon(getIcon(6, false, noteColor));
@@ -538,17 +565,20 @@ void NoteWidget::setTextEditButtons() {
     ui->bulletlistButton->setIcon(getIcon(11, false, noteColor));
 }
 
-void NoteWidget::onBoldButtonStateChanged() {
+void NoteWidget::onBoldButtonStateChanged()
+{
     ui->boldButton->setIcon(getIcon(4, ui->boldButton->isChecked(), noteColor));
     updateFormat();
 }
 
-void NoteWidget::onItalicButtonStateChanged() {
+void NoteWidget::onItalicButtonStateChanged()
+{
     ui->italicButton->setIcon(getIcon(5, ui->italicButton->isChecked(), noteColor));
     updateFormat();
 }
 
-void NoteWidget::onUnderlineButtonStateChanged() {
+void NoteWidget::onUnderlineButtonStateChanged()
+{
     ui->underlineButton->setIcon(getIcon(9, ui->underlineButton->isChecked(), noteColor));
     updateFormat();
 }
@@ -558,13 +588,15 @@ void NoteWidget::onStrikethroughButtonStateChanged() {
     updateFormat();
 }
 
-void NoteWidget::onEditorToolsButtonStateChanged() {
+void NoteWidget::onEditorToolsButtonStateChanged()
+{
     bool state = ui->editorToolsButton->isChecked();
     ui->frame->setVisible(state);
     ui->editorToolsButton->setIcon(getIcon(8, state, noteColor));
 }
 
-void NoteWidget::onBulletListButtonStateChanged() {
+void NoteWidget::onBulletListButtonStateChanged()
+{
     bool state = ui->bulletlistButton->isChecked();
     if (state) {
         convertToBulletList();
@@ -574,7 +606,8 @@ void NoteWidget::onBulletListButtonStateChanged() {
     ui->bulletlistButton->setIcon(getIcon(11, state, noteColor));
 }
 
-void NoteWidget::addBulletOnNewLine() {
+void NoteWidget::addBulletOnNewLine()
+{
     QTextCursor cursor = ui->noteTextEdit->textCursor();
 
     if (cursor.atBlockEnd() && cursor.block().text().isEmpty()) {
@@ -582,7 +615,8 @@ void NoteWidget::addBulletOnNewLine() {
     }
 }
 
-void NoteWidget::convertToBulletList() {
+void NoteWidget::convertToBulletList()
+{
     QTextCursor cursor = ui->noteTextEdit->textCursor();
     cursor.beginEditBlock();
 
@@ -612,7 +646,8 @@ void NoteWidget::convertToBulletList() {
     connect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
 }
 
-void NoteWidget::revertBulletList() {
+void NoteWidget::revertBulletList()
+{
     QTextCursor cursor = ui->noteTextEdit->textCursor();
     cursor.beginEditBlock();
 
@@ -642,8 +677,8 @@ void NoteWidget::revertBulletList() {
     disconnect(ui->noteTextEdit, &QTextEdit::textChanged, this, &NoteWidget::addBulletOnNewLine);
 }
 
-void NoteWidget::setTitleTransparency() {
-
+void NoteWidget::setTitleTransparency()
+{
     QPalette titlePalette = ui->noteTitleLineEdit->palette();
 
     QColor actualBaseColor = titlePalette.color(QPalette::Base);
@@ -653,7 +688,8 @@ void NoteWidget::setTitleTransparency() {
     ui->noteTitleLineEdit->setPalette(titlePalette);
 }
 
-void NoteWidget::setContentTransparency() {
+void NoteWidget::setContentTransparency()
+{
     QPalette contentPalette = ui->noteTextEdit->palette();
 
     QColor actualBaseColor = contentPalette.color(QPalette::Base);
