@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    QObject::connect(&app, &QApplication::aboutToQuit, [&]() {
+    QObject::connect(&app, &QApplication::aboutToQuit, &qwoteServer, [&]() {
         qwoteServer.stopServer();
         sharedMemory.detach();
     });
