@@ -8,6 +8,9 @@
 const QString SERVER_NAME = "QwoteServer";
 
 int main(int argc, char *argv[]) {
+#ifdef __linux__
+    qputenv("QT_QPA_PLATFORM", "xcb");
+#endif
     QSharedMemory sharedMemory("QwoteID");
 
     if (sharedMemory.attach()) {

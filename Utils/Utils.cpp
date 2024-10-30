@@ -101,7 +101,7 @@ QPixmap recolorIcon(const QPixmap &originalIcon, const QColor &color, int redRep
     return QPixmap::fromImage(img);
 }
 
-QIcon Utils::getIcon(int icon, bool pinned) {
+QIcon Utils::getIcon(int icon, bool pinned, const QString& color) {
     QString theme = getTheme();
     QColor recolor = (theme == "dark") ? QColor(0, 0, 0) : QColor(215, 215, 215);
     QPixmap iconPixmap;
@@ -145,7 +145,22 @@ QIcon Utils::getIcon(int icon, bool pinned) {
     }
 
     if (pinned && (icon == 2 || icon == 4 || icon == 5 || icon == 8 || icon == 9 || icon == 10 || icon == 11)) {
-        recolor = (theme == "dark") ? getAccentColor("dark2") : getAccentColor("light2");
+        static const QMap<QString, QColor> colorMap = {
+            { "Red", QColor(230, 45, 66) },
+            { "Green", QColor(58, 148, 74) },
+            { "Blue", QColor(52, 133, 228) },
+            { "Orange", QColor(236, 91, 1) },
+            { "Teal", QColor(32, 145, 164) },
+            { "Pink", QColor(213, 96, 152) },
+            { "Purple", QColor(144, 64, 172) },
+            { "Yellow", QColor(200, 136, 0) }
+        };
+
+        if (color == "Windows") {
+            recolor = (theme == "dark") ? getAccentColor("dark2") : getAccentColor("light2");
+        } else if (colorMap.contains(color)) {
+            recolor = colorMap.value(color);
+        }
     }
 
     QPixmap recoloredIcon = recolorIcon(iconPixmap, recolor, 0, 0, 0);
@@ -172,11 +187,27 @@ QString Utils::getRandomPlaceholder() {
     return placeholders[randomIndex];
 }
 
-QPalette Utils::setTitleColor(QPalette originalPalette) {
-    if (getTheme() == "dark") {
-        originalPalette.setColor(QPalette::Text, getAccentColor("dark2"));
+QPalette Utils::setTitleColor(QPalette originalPalette, const QString& color) {
+    static const QMap<QString, QColor> colorMap = {
+        { "Red", QColor(230, 45, 66) },
+        { "Green", QColor(58, 148, 74) },
+        { "Blue", QColor(52, 133, 228) },
+        { "Orange", QColor(236, 91, 1) },
+        { "Teal", QColor(32, 145, 164) },
+        { "Pink", QColor(213, 96, 152) },
+        { "Purple", QColor(144, 64, 172) },
+        { "Yellow", QColor(200, 136, 0) }
+    };
+
+    if (color == "Windows") {
+        QColor accentColor = getTheme() == "dark" ? getAccentColor("dark2") : getAccentColor("light2");
+        originalPalette.setColor(QPalette::Text, accentColor);
+        originalPalette.setColor(QPalette::Highlight, accentColor);
     } else {
-        originalPalette.setColor(QPalette::Text, getAccentColor("light2"));
+        QColor chosenColor = colorMap.value(color, QColor(236, 91, 1)); // Default to Orange if color not found
+        originalPalette.setColor(QPalette::Text, chosenColor);
+        originalPalette.setColor(QPalette::Highlight, chosenColor);
     }
+
     return originalPalette;
 }

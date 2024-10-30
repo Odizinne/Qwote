@@ -19,6 +19,7 @@ private:
     Ui::SettingsPage *ui;
     void loadSettings();
     void populateFontComboBox();
+    void populateColorComboBox();
 
 private slots:
     void saveSettings();

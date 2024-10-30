@@ -35,6 +35,7 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     , opacity(255)
     , roundedCorners(true)
     , frame(true)
+    , noteColor("Orange")
 {
     ui->setupUi(this);
     setWindowTitle(tr("New note"));
@@ -74,7 +75,6 @@ NoteWidget::NoteWidget(QWidget *parent, const QString &filePath, bool restored, 
     connect(ui->strikethroughButton, &QToolButton::toggled, this, &NoteWidget::onStrikethroughButtonStateChanged);
     connect(ui->bulletlistButton, &QToolButton::toggled, this, &NoteWidget::onBulletListButtonStateChanged);
 
-
     fadeIn();
 }
 
@@ -85,7 +85,7 @@ NoteWidget::~NoteWidget() {
 void NoteWidget::togglePinnedState() {
     isPinned = ui->pinButton->isChecked();
     setWindowFlag(Qt::WindowStaysOnTopHint, isPinned);
-    ui->pinButton->setIcon(getIcon(2, isPinned));
+    ui->pinButton->setIcon(getIcon(2, isPinned, noteColor));
     show();
     saveNote();
 }
@@ -183,7 +183,7 @@ void NoteWidget::loadNoteFromFile() {
 
             if (allHaveBullets) {
                 ui->bulletlistButton->setChecked(true);
-                ui->bulletlistButton->setIcon(getIcon(11, true));
+                ui->bulletlistButton->setIcon(getIcon(11, true, noteColor));
                 convertToBulletList();
             }
 
@@ -199,7 +199,7 @@ void NoteWidget::loadNoteFromFile() {
 
             isPinned = noteObject.value("pinned").toBool();
             ui->pinButton->setChecked(isPinned);
-            ui->pinButton->setIcon(getIcon(2, isPinned));
+            ui->pinButton->setIcon(getIcon(2, isPinned, noteColor));
             togglePinnedState();
         }
     }
@@ -274,12 +274,6 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
     painter.setBrush(backgroundColor);
     painter.setPen(Qt::transparent);
 
-    //if (roundedCorners) {
-    //    painter.drawRoundedRect(rect(), 8, 8);
-    //} else {
-    //    painter.drawRect(rect());
-    //}
-
     QRect borderRect;
 
     if (frame) {
@@ -303,14 +297,14 @@ void NoteWidget::paintEvent(QPaintEvent *event) {
 }
 
 void NoteWidget:: setButtons() {
-    ui->newButton->setIcon(getIcon(1, false));
-    ui->pinButton->setIcon(getIcon(2, false));
-    ui->closeButton->setIcon(getIcon(3, false));
+    ui->newButton->setIcon(getIcon(1, false, noteColor));
+    ui->pinButton->setIcon(getIcon(2, false, noteColor));
+    ui->closeButton->setIcon(getIcon(3, false, noteColor));
 }
 
 void NoteWidget::setTitle() {
 #ifdef _WIN32
-    ui->noteTitleLineEdit->setPalette(setTitleColor(ui->noteTitleLineEdit->palette()));
+    ui->noteTitleLineEdit->setPalette(setTitleColor(ui->noteTitleLineEdit->palette(), noteColor));
 #endif
     ui->noteTitleLineEdit->setPlaceholderText(getRandomPlaceholder());
 }
@@ -488,10 +482,13 @@ void NoteWidget::resetFontSize() {
 void NoteWidget::loadSettings()
 {
     QString defaultFontFamily;
+    QString defaultNoteColor;
 #ifdef _WIN32
     defaultFontFamily = "Consolas";
+    defaultNoteColor = "Windows";
 #elif __linux__
     defaultFontFamily = "Monospace";
+    defaultNoteColor = "Orange";
 #endif
 
     QSettings settings("Odizinne", "Qwote");
@@ -509,6 +506,9 @@ void NoteWidget::loadSettings()
     roundedCorners = settings.value("roundedCorners", true).toBool();
     frame = settings.value("frame", true).toBool();
 
+    noteColor = settings.value("color", defaultNoteColor).toString();
+
+    setTitle();
     setContentTransparency();
     setTitleTransparency();
     update();
@@ -518,61 +518,50 @@ void NoteWidget::updateFormat() {
     QTextCharFormat format;
     QTextCursor cursor = ui->noteTextEdit->textCursor();
 
-    // Clear selection by moving the cursor to a single position
     cursor.clearSelection();
     ui->noteTextEdit->setTextCursor(cursor);
-
-    // Apply bold formatting based on the button's state
     format.setFontWeight(ui->boldButton->isChecked() ? QFont::Bold : QFont::Normal);
-
-    // Apply italic formatting based on the button's state
     format.setFontItalic(ui->italicButton->isChecked());
-
-    // Apply underline formatting based on the button's state
     format.setFontUnderline(ui->underlineButton->isChecked());
-
-    // Apply strikethrough formatting based on the button's state
     format.setFontStrikeOut(ui->strikethroughButton->isChecked());
-
-    // Set the character format for future text inputs
     ui->noteTextEdit->setCurrentCharFormat(format);
 }
 
 void NoteWidget::setTextEditButtons() {
-    ui->boldButton->setIcon(getIcon(4, false));
-    ui->italicButton->setIcon(getIcon(5, false));
-    ui->plusButton->setIcon(getIcon(6, false));
-    ui->minusButton->setIcon(getIcon(7, false));
-    ui->editorToolsButton->setIcon(getIcon(8, false));
-    ui->underlineButton->setIcon(getIcon(9, false));
-    ui->strikethroughButton->setIcon(getIcon(10, false));
-    ui->bulletlistButton->setIcon(getIcon(11, false));
+    ui->boldButton->setIcon(getIcon(4, false, noteColor));
+    ui->italicButton->setIcon(getIcon(5, false, noteColor));
+    ui->plusButton->setIcon(getIcon(6, false, noteColor));
+    ui->minusButton->setIcon(getIcon(7, false, noteColor));
+    ui->editorToolsButton->setIcon(getIcon(8, false, noteColor));
+    ui->underlineButton->setIcon(getIcon(9, false, noteColor));
+    ui->strikethroughButton->setIcon(getIcon(10, false, noteColor));
+    ui->bulletlistButton->setIcon(getIcon(11, false, noteColor));
 }
 
 void NoteWidget::onBoldButtonStateChanged() {
-    ui->boldButton->setIcon(getIcon(4, ui->boldButton->isChecked()));
+    ui->boldButton->setIcon(getIcon(4, ui->boldButton->isChecked(), noteColor));
     updateFormat();
 }
 
 void NoteWidget::onItalicButtonStateChanged() {
-    ui->italicButton->setIcon(getIcon(5, ui->italicButton->isChecked()));
+    ui->italicButton->setIcon(getIcon(5, ui->italicButton->isChecked(), noteColor));
     updateFormat();
 }
 
 void NoteWidget::onUnderlineButtonStateChanged() {
-    ui->underlineButton->setIcon(getIcon(9, ui->underlineButton->isChecked()));
+    ui->underlineButton->setIcon(getIcon(9, ui->underlineButton->isChecked(), noteColor));
     updateFormat();
 }
 
 void NoteWidget::onStrikethroughButtonStateChanged() {
-    ui->strikethroughButton->setIcon(getIcon(10, ui->strikethroughButton->isChecked()));
+    ui->strikethroughButton->setIcon(getIcon(10, ui->strikethroughButton->isChecked(), noteColor));
     updateFormat();
 }
 
 void NoteWidget::onEditorToolsButtonStateChanged() {
     bool state = ui->editorToolsButton->isChecked();
     ui->frame->setVisible(state);
-    ui->editorToolsButton->setIcon(getIcon(8, state));
+    ui->editorToolsButton->setIcon(getIcon(8, state, noteColor));
 }
 
 void NoteWidget::onBulletListButtonStateChanged() {
@@ -582,7 +571,7 @@ void NoteWidget::onBulletListButtonStateChanged() {
     } else {
         revertBulletList();
     }
-    ui->bulletlistButton->setIcon(getIcon(11, state));
+    ui->bulletlistButton->setIcon(getIcon(11, state, noteColor));
 }
 
 void NoteWidget::addBulletOnNewLine() {

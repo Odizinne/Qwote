@@ -71,7 +71,8 @@ Qwote will be available in your start menu.
 
 Download latest precompiled binary in release section.
 
-Wayland support is buggy atm.
+Wayland support is buggy atm.  
+Qwote will run using xcb platform plugin.
 
 ## Credits
 

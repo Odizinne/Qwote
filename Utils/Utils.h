@@ -8,9 +8,9 @@
 namespace Utils {
     QString getTheme();
     QString getAccentColor(const QString &accentKey);
-    QIcon getIcon(int icon, bool pinned);
+    QIcon getIcon(int icon, bool pinned, const QString &color);
     QString getRandomPlaceholder();
-    QPalette setTitleColor(QPalette originalPalette);
+    QPalette setTitleColor(QPalette originalPalette, const QString& color);
 }
 
 #endif // UTILS_H

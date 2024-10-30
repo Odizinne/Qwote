@@ -53,6 +53,7 @@ private:
     int opacity;
     bool roundedCorners;
     bool frame;
+    QString noteColor;
 
     void setTextEditFontSize(int fontSize);
     void setTextEditButtons();
