@@ -65,7 +65,7 @@ void SettingsPage::loadSettings()
 
     ui->fontComboBox->setCurrentText(settings.value("font", defaultFont).toString());
     ui->colorComboBox->setCurrentText(settings.value("color", defaultColor).toString());
-    ui->opacitySlider->setValue(settings.value("opacity", 128).toInt() + 127);
+    ui->opacitySlider->setValue(settings.value("opacity", 255).toInt());
     ui->roundedCornersCheckbox->setChecked(settings.value("roundedCorners", true).toBool());
     ui->frameCheckbox->setChecked(settings.value("frame", true).toBool());
 }
@@ -76,7 +76,7 @@ void SettingsPage::saveSettings()
 
     settings.setValue("font", ui->fontComboBox->currentText());
     settings.setValue("color", ui->colorComboBox->currentText());
-    settings.setValue("opacity", ui->opacitySlider->value() + 127);
+    settings.setValue("opacity", ui->opacitySlider->value());
     settings.setValue("roundedCorners", ui->roundedCornersCheckbox->isChecked());
     settings.setValue("frame", ui->frameCheckbox->isChecked());
 
