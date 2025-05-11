@@ -48,24 +48,7 @@ Toggle editor tools
 
 ### Windows 
 
-#### Manual
-
 Download latest release, extract it, and run `Qwote.exe`.
-
-#### Using OdizinnePackageManager
-
-- Install OPM
-```
-Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Odizinne/opm/refs/heads/main/opm_install.ps1')
-```
-
-- Install Qwote 
-```
-opm update
-opm install qwote
-```
-
-Qwote will be available in your start menu.
 
 ### Linux
 
